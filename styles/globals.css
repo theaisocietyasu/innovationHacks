@@ -29,6 +29,23 @@
   src: url('/font/Poppins-Regular.ttf');
 }
 
+@font-face {
+  font-family: 'TAN-NIMBUS';
+  src: url('/font/TAN-NIMBUS.otf') format('opentype'),
+       url('/font/TAN-NIMBUS.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mancunia-Outline';
+  src: url('/font/Mancunia-Outline.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 *{
   @apply text-white font-content
 
@@ -73,6 +90,12 @@ html{
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
 
+  --color-accent: #E066FF;
+  --color-accent-dim: #7B61FF;
+  --color-surface-1: rgba(39, 39, 42, 0.43);
+  --color-surface-2: rgba(39, 39, 42, 0.7);
+  --color-border: rgba(224, 102, 255, 0.2);
+  --gradient-accent: linear-gradient(135deg, #E066FF, #7B61FF);
 }
 
 @media (prefers-color-scheme: dark) {
