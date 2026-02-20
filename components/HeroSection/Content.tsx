@@ -5,16 +5,6 @@ import { openRSVPModal } from "@/components/RSVPForm";
 import Image from "next/image";
 
 const Content: React.FC = () => {
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://thesoda.io";
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
 
   const h1Variants = {
     hidden: { opacity: 0, x: 0, y: 0 },
@@ -81,11 +71,11 @@ const Content: React.FC = () => {
         
         <motion.div className="flex flex-col w-full gap-1 text-white mt-4 text-center md:text-left">
           <motion.div className="flex flex-col rounded-3xl w-full text-2xl md:text-4xl">
-            <h1>April 19-20</h1>
+            <h1>April 2026 — TBD</h1>
           </motion.div>
 
           <div className="flex flex-col rounded-3xl w-full text-2xl md:text-4xl">
-            <h1>ECG + ECF</h1>
+            <h1>ECG + ECF, ASU Tempe</h1>
           </div>
         </motion.div>
       </div>
@@ -95,12 +85,12 @@ const Content: React.FC = () => {
         <CountdownTimer />
         <div className="flex flex-col gap-4 md:gap-6 w-full max-w-md mx-auto md:max-w-none">
           <a
-            href="https://innovationhacks-2025.devpost.com/"
+            href="https://innovationhacks-2026.devpost.com/"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-[#003E54] w-full hover:bg-[#003E54] text-white py-2 px-4 md:py-3 md:px-6 rounded-2xl font-semibold shadow-lg transition duration-300 flex items-center justify-center"
           >
-            <span>Devpost Submission</span>
+            <span>Devpost — Coming Soon</span>
           </a>
           <a
             href="https://discord.gg/bcs3bxaVbV"

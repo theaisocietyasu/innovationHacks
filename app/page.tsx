@@ -61,27 +61,13 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const sectionIds = ["about", "themes", "schedule", "sponsors", "prizes", "team", "rsvp", "faq"];
+
     const handleScroll = () => {
-      const about = document.getElementById("about");
-      const themes = document.getElementById("themes");
-      const schedule = document.getElementById("schedule");
-      const sponsors = document.getElementById("sponsors");
-      const prizes = document.getElementById("prizes");
-      const team = document.getElementById("team");
-      const rsvp = document.getElementById("rsvp");
-      const faq = document.getElementById("faq");
+      const offsets = sectionIds.map((id) => document.getElementById(id)?.offsetTop ?? Infinity);
+      const [aboutOffset, themesOffset, scheduleOffset, sponsersOffset, prizesOffset, teamOffset, rsvpOffset, faqOffset] = offsets;
 
-      if (about && themes && schedule && sponsors && prizes && team && rsvp && faq) {
-        const aboutOffset = about.offsetTop;
-        const themesOffset = themes.offsetTop;
-        const scheduleOffset = schedule.offsetTop;
-        const sponsersOffset = sponsors.offsetTop;
-        const prizesOffset = prizes.offsetTop;
-        const teamOffset = team.offsetTop;
-        const rsvpOffset = rsvp.offsetTop;
-        const faqOffset = faq.offsetTop;
-
-        // console.log(aboutOffset, themesOffset, scheduleOffset, sponsersOffset, prizesOffset, teamOffset, faqOffset);
+      if (offsets.some((o) => o !== Infinity)) {
         handleScrollSection(
           aboutOffset,
           themesOffset,
