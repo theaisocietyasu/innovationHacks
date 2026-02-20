@@ -3,6 +3,9 @@ import { motion, useAnimation, useInView } from "framer-motion";
 import CountdownTimer from "./CountdownTimer";
 import { openRSVPModal } from "@/components/RSVPForm";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+
+const Grainient = dynamic(() => import("./Grainient"), { ssr: false });
 
 const Content: React.FC = () => {
 
@@ -51,10 +54,37 @@ const Content: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center w-full gradient-background min-h-screen">
+    <div className="relative flex justify-center w-full min-h-screen overflow-hidden">
+      {/* Grainient background — absolutely fills hero, no interaction with content */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Grainient
+          color1="#e066ff"
+          color2="#7b61ff"
+          color3="#0d0d0d"
+          timeSpeed={0.25}
+          colorBalance={0}
+          warpStrength={1}
+          warpFrequency={5}
+          warpSpeed={2}
+          warpAmplitude={50}
+          blendAngle={0}
+          blendSoftness={0.05}
+          rotationAmount={500}
+          noiseScale={2}
+          grainAmount={0.1}
+          grainScale={2}
+          grainAnimated={false}
+          contrast={1.5}
+          gamma={1}
+          saturation={1}
+          centerX={0}
+          centerY={0}
+          zoom={0.9}
+        />
+      </div>
       <motion.div
         ref={ref}
-        className="min-h-screen justify-center md:items-center px-8 gap-y-8 w-full max-w-6xl flex flex-col md:flex-row"
+        className="relative z-10 min-h-screen justify-center md:items-center px-8 gap-y-8 w-full max-w-6xl flex flex-col md:flex-row"
         initial="hidden"
         animate="visible"
         variants={h1Variants}
