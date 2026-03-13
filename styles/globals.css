@@ -54,6 +54,14 @@ html{
   /* scroll-behavior: smooth; */
 }
 
+/* Responsive background: on mobile portrait, anchor to top-center
+   so the most visually interesting part of the landscape image shows */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+  #page-bg {
+    background-position: center top;
+  }
+}
+
 @media screen and (min-width: 1024px) {
   html{
     scroll-behavior: smooth;
@@ -108,17 +116,8 @@ html{
 
 body {
   color: rgb(var(--foreground-rgb));
-  /* background: linear-gradient(to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb)); */
-  /* background: linear-gradient(90deg, rgba(8,4,78,1) 0%, rgba(47,22,74,1) 42%, rgba(63,33,71,1) 69%, rgba(60,27,31,1) 100%); */
-  /* background: rgb(54,33,71); */
-  /* background: linear-gradient(106deg, rgba(54,33,71,1) 114%, rgba(97,12,12,0.46046922186843486) 100%); */
-  background-color: rgba(0, 0, 0, 0.92);
   overflow-x: hidden;
   box-sizing: border-box;
-
-
 }
 
 

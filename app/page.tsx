@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import Navbar from "../components/Navbar";
 import Timeline from "@/components/Timeline/Timeline";
 import Footer from "@/components/Footer";
@@ -89,10 +88,19 @@ export default function Home() {
   }, [activeSection]);
 
   return (
-    <main className="overflow-x-hidden bg-[#0D0D0D] relative">
-      {/* Main gradient overlay */}
-      <div className="fixed inset-0 bg-gradient-to-b from-purple-900/30 via-[#0D0D0D] to-[#0D0D0D] pointer-events-none" />
-      
+    <main className="overflow-x-hidden relative">
+      {/* Full-page background image */}
+      <div
+        id="page-bg"
+        className="fixed inset-0 -z-10"
+        style={{
+          backgroundImage: "url('/assets/images/glassmorphbg.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center center",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+
       {/* Content container */}
       <div className="relative z-10">
         <Navbar activeSection={activeSection}/>
