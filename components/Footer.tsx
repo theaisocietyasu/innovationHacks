@@ -53,10 +53,12 @@ const OrgCard: React.FC<OrgCardProps> = ({ name, logoSrc, discordHref, instagram
   >
     <div
       style={{
-        height: 48,
+        width: 64,
+        height: 64,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        flexShrink: 0,
       }}
     >
       <Image
@@ -64,7 +66,7 @@ const OrgCard: React.FC<OrgCardProps> = ({ name, logoSrc, discordHref, instagram
         alt={`${name} logo`}
         width={logoWidth}
         height={logoHeight}
-        style={{ objectFit: "contain", maxHeight: 48, width: "auto" }}
+        style={{ objectFit: "contain", width: "100%", height: "100%" }}
       />
     </div>
     <span
@@ -129,6 +131,7 @@ const OrgCard: React.FC<OrgCardProps> = ({ name, logoSrc, discordHref, instagram
 
 const Footer: React.FC = () => (
   <footer
+    className="mt-16"
     style={{
       background: "#0a0614",
     }}
