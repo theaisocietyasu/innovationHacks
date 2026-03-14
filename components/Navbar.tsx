@@ -33,7 +33,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
 
   return (
     <div className="navbar  py-4 px-8  fixed top-0 left-0 right-0 z-20 bg-gradient-to-b from-[#171721] from-40% ">
-      <div className="container mx-auto flex items-center justify-between">
+      <div className="container mx-auto flex items-center justify-between pr-28">
         <div className="logo">
           <a href="#hero" className="text-white text-2xl font-bold">
             Innovation Hacks

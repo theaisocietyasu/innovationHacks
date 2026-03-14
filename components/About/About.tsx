@@ -34,20 +34,20 @@ const About = () => {
             />
             +
           </h1>
-          <p className="text-slate-200">Prize categories</p>
+          <p className="text-white/80">Prize categories</p>
         </div>
         <div className="basis-1/3 border-2 rounded-2xl w-full p-5 glassy-effect">
           <h1 className="text-4xl my-2 font-semibold text-rose-500">
             <CountUp
               start={0}
-              end={30}
+              end={36}
               duration={4}
               className="font-bold text-rose-500"
               enableScrollSpy={true}
             />
             +
           </h1>
-          <p className="text-slate-200">Hours of Hacking</p>
+          <p className="text-white/80">Hours of Hacking</p>
         </div>
         <div className="basis-1/3 border-2 rounded-2xl w-full p-5 glassy-effect">
           <h1 className="text-4xl my-2 font-semibold orange-logo">
@@ -60,24 +60,19 @@ const About = () => {
             />
             +
           </h1>
-          <p className="text-slate-200">Participants</p>
+          <p className="text-white/80">Participants</p>
         </div>
       </div>
       <div className="flex flex-col sm:flex-row w-full items-center justify-center gap-5 px-5 mt-5 container1 container2">
         <div className="basis-1/2 border-2 rounded-2xl sm:h-96 w-full p-5 overflow-y-scroll lg:overflow-auto glassy-effect">
-          <p className="text-slate-200 text-lg sm:text-xl sm:mt-3">
-            Start building projects and join us at Innovation Hacks 2025!
+          <p className="text-white/80 text-lg sm:text-xl sm:mt-3">
+            Innovation Hacks 2.0 is ASU&apos;s largest Spring hackathon — 36 hours of building, learning, and competing for over $10K in prizes.
             <br />
             <br />
-            Innovation Hacks 2025 is a 24-hour hackathon organized by The AI Society, GDSC, and the Software Developers Association at ASU.
+            Organized by The AI Society, Google Developer Group ASU, and the Software Developers Association, this event brings together passionate developers, designers, and entrepreneurs to transform ideas into reality.
             <br />
             <br />
-            This event provides a platform for passionate developers, designers, and enthusiasts to come together and
-            transform their ideas into reality.
-            <br />
-            <br />
-            Whether you've been to tons of hackathons or you're thinking about attending your first, Innovation Hacks would love to have you.
-            Join us for a weekend of learning, building, and fun!
+            Whether it&apos;s your first hackathon or your tenth, you&apos;re welcome here. Come build something you&apos;re proud of — mentors, workshops, food, and fun included.
           </p>
         </div>
         <div className="basis-1/2 border-2 h-96 rounded-2xl w-full p-4 sm:h-96 glassy-effect">

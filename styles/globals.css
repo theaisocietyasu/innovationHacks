@@ -104,6 +104,9 @@ html{
   --color-surface-2: rgba(39, 39, 42, 0.7);
   --color-border: rgba(224, 102, 255, 0.2);
   --gradient-accent: linear-gradient(135deg, #E066FF, #7B61FF);
+  --glass-bg: rgba(18, 12, 28, 0.42);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-specular: rgba(255, 255, 255, 0.9);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -349,17 +352,17 @@ body {
 }
 .slider::before,
 .slider::after {
-  background: linear-gradient(to right, #fff 0%, #ffffff00 100%);
+  background: linear-gradient(to right, rgba(10, 5, 20, 0.85) 0%, transparent 100%);
   content: '';
   z-index: 2;
   position: absolute;
   height: 100%;
   width: 15rem;
   pointer-events: none;
-} 
- .dark .slider::before,
+}
+.dark .slider::before,
 .dark .slider::after {
-  background: linear-gradient(to right, #111 0%, #f3535300 100%);
+  background: linear-gradient(to right, rgba(10, 5, 20, 0.85) 0%, transparent 100%);
   content: '';
   z-index: 2;
   position: absolute;
@@ -496,7 +499,7 @@ body {
   position: relative;
 }
 
-.timeline::before {
+/* .timeline::before {
   content: "";
   position: absolute;
   top: 0;
@@ -504,10 +507,10 @@ body {
   width: 650px;
   height: 800px;
   border-radius: 50%;
-  background: linear-gradient(343deg, rgba(120, 47, 152, 1) 0%, rgba(5, 50, 129, 1) 82%, rgba(52, 39, 100, 1) 100%);
-  filter: blur(350px);
+  background: linear-gradient(343deg, rgba(120, 47, 152, 0.15) 0%, rgba(5, 50, 129, 0.15) 82%, rgba(52, 39, 100, 0.15) 100%);
+  filter: blur(150px);
   z-index: -1;
-}
+} */
 
 .timeline::after {
   content: "";
@@ -517,8 +520,8 @@ body {
   width: 650px;
   height: 800px;
   border-radius: 50%;
-  background: linear-gradient(343deg, rgba(120, 47, 152, 1) 0%, rgba(5, 50, 129, 1) 82%, rgba(52, 39, 100, 1) 100%);
-  filter: blur(350px);
+  background: linear-gradient(343deg, rgba(120, 47, 152, 0.15) 0%, rgba(5, 50, 129, 0.15) 82%, rgba(52, 39, 100, 0.15) 100%);
+  filter: blur(150px);
   z-index: -1;
 }
 
@@ -535,4 +538,13 @@ body {
     top: 0;
     width: 0;
   }
+}
+
+.glass-card {
+  background: rgba(15, 10, 30, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }

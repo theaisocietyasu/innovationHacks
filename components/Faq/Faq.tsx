@@ -104,7 +104,7 @@ const HacksFaq = [
 
 export default function FAQ() {
   return (
-    <div className="mt-32 w-full items-center justify-center flex flex-col gap-12  p-10 ">
+    <div className="mt-20 w-full items-center justify-center flex flex-col gap-12  p-10 ">
       <div className="text-center   flex flex-col">
         <div className="my-8 text-white text-xl sm:text-2xl md:text-4xl">
           <h2 className="text-2xl text-center font-bold text-white dark:text-white md:text-3xl lg:text-4xl font-logo">
@@ -127,7 +127,7 @@ export function Disclosures({ full = false }) {
   };
 
   return (
-    <div className="divide-y divide-zinc-200 border-y border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+    <div className={`glassy-div divide-y divide-zinc-200 border-y border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800`}>
       {HacksFaq.map((item, i) => (
         <div
           key={String(i)}
