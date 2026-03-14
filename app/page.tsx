@@ -136,7 +136,22 @@ export default function Home() {
             <Faq />
           </div>
         </div>
-        <Footer />
+        <div style={{ position: "relative" }}>
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              top: -100,
+              left: 0,
+              right: 0,
+              height: 100,
+              background: "linear-gradient(to bottom, transparent, #0a0614)",
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          />
+          <Footer />
+        </div>
       </div>
     </main>
   );

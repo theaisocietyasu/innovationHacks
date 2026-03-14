@@ -1,103 +1,218 @@
 "use client";
 import React from "react";
-import { FaDiscord, FaInstagram, FaLinkedinIn, FaYoutube } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
 import Image from "next/image";
+import { FaDiscord, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 
-const Footer = () => {
-  const SOCIALS = {
-    // SoDA socials
-    soda_instagram: "https://instagram.com/soda.asu",
-    soda_discord: "https://discord.gg/the-software-developers-association-762811961238618122",
-    soda_linkedin: "https://www.linkedin.com/company/thesoda/",
-    soda_twitter: "https://x.com/asu_soda",
-    soda_email: "mailto:help@innovationhacks.dev",
-    soda_mail: "help@innovationhacks.dev",
-    
-    // GDSC socials
-    gdsc_instagram: "https://www.instagram.com/asu.dsc/",
-    gdsc_discord: "https://discord.gg/jE224Skdvx",
-    gdsc_linkedin: "https://www.linkedin.com/company/gdsc-asu/",
-    gdsc_twitter: "https://x.com/gdsc_asu",
-    
-    // AI Society socials
-    ai_instagram: "https://www.instagram.com/theaisociety.asu/",
-    ai_discord: "https://discord.gg/dCWm6xBGtM",
-    ai_linkedin: "https://www.linkedin.com/company/ai-society-asu/",
-    ai_twitter: "https://x.com/ai_society_asu",
-  };
-
-  return (
-    <footer className=" p-4  bg-black  bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-5">
-      <div className="flex flex-col items-center">
-        {/* Organization Logos */}
-        {/* <div className="flex flex-row flex-wrap  justify-center items-center space-x-8 mb-8">
-          <a href={SOCIALS.ai_discord} target="_blank" rel="noopener noreferrer">
-            <Image src="/assets/images/AI_Society.png" alt="AI Society Logo" width={120} height={40} className="object-contain hover:opacity-80 transition-opacity" />
-         </a>
-          <a href={SOCIALS.soda_discord} target="_blank" rel="noopener noreferrer">
-            <Image src="/assets/images/soda.png" alt="SoDA Logo" width={120} height={40} className="object-contain hover:opacity-80 transition-opacity" />
-          </a>
-          <a href={SOCIALS.gdsc_discord} target="_blank" rel="noopener noreferrer">
-            <Image src="/assets/images/gdsc.svg" alt="GDSC Logo" width={120} height={40} className="object-contain hover:opacity-80 transition-opacity" />
-          </a>
-        </div> */}
-        
-        {/* Social media links */}
-        <div className="flex flex-col items-center  space-y-4 mb-9">
-          <div className="flex space-x-8 text-sm">
-            <div className="flex flex-col items-center">
-              <span className="text-gray-400 mb-2 text-2xl">AI Society</span>
-              <div className="flex space-x-4">
-                <a href={SOCIALS.ai_discord} className="hover:text-[#E066FF] transition-colors" target="_blank" rel="noopener noreferrer">
-                  <FaDiscord className="text-xl" />
-                </a>
-                <a href={SOCIALS.ai_instagram} className="hover:text-[#E066FF] transition-colors" target="_blank" rel="noopener noreferrer">
-                  <FaInstagram className="text-xl" />
-                </a>
-              </div>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="text-gray-400 mb-2 text-2xl">SoDA</span>
-              <div className="flex space-x-4">
-                <a href={SOCIALS.soda_discord} className="hover:text-[#E066FF] transition-colors" target="_blank" rel="noopener noreferrer">
-                  <FaDiscord className="text-xl" />
-                </a>
-                <a href={SOCIALS.soda_instagram} className="hover:text-[#E066FF] transition-colors" target="_blank" rel="noopener noreferrer">
-                  <FaInstagram className="text-xl" />
-                </a>
-              </div>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="text-gray-400 mb-2 text-2xl" >GDSC</span>
-              <div className="flex space-x-4">
-                <a href={SOCIALS.gdsc_discord} className="hover:text-[#E066FF] transition-colors" target="_blank" rel="noopener noreferrer">
-                  <FaDiscord className="text-xl" />
-                </a>
-                <a href={SOCIALS.gdsc_instagram} className="hover:text-[#E066FF] transition-colors" target="_blank" rel="noopener noreferrer">
-                  <FaInstagram className="text-xl" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer content */}
-        <div className="w-full justify-center">
-          <div className="flex flex-col items-center text-center space-y-4">
-            <div className="text-xs xl:text-sm">
-              <a href={SOCIALS.soda_email} className="hover:text-[#E066FF] transition-colors mb-4 block">
-                Contact Us
-              </a>
-              <div className="mx-5 lg:mx-0">
-                Copyrights © 2025. All rights reserved by The Software Developers Association
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
+const SOCIALS = {
+  // SoDA
+  soda_instagram: "https://instagram.com/soda.asu",
+  soda_discord:
+    "https://discord.gg/the-software-developers-association-762811961238618122",
+  // GDSC
+  gdsc_instagram: "https://www.instagram.com/asu.dsc/",
+  gdsc_discord: "https://discord.gg/jE224Skdvx",
+  // AI Society
+  ai_instagram: "https://www.instagram.com/theaisociety.asu/",
+  ai_discord: "https://discord.gg/dCWm6xBGtM",
+  // General
+  email: "mailto:help@innovationhacks.dev",
+  mlh_coc: "https://github.com/MLH/mlh-policies/blob/main/code-of-conduct.md",
 };
+
+interface OrgCardProps {
+  name: string;
+  logoSrc: string;
+  discordHref: string;
+  instagramHref: string;
+  logoWidth: number;
+  logoHeight: number;
+}
+
+const OrgCard: React.FC<OrgCardProps> = ({ name, logoSrc, discordHref, instagramHref, logoWidth, logoHeight }) => (
+  <div
+    className="group flex flex-col items-center rounded-2xl px-6 py-4 transition-all duration-300"
+    style={{
+      background: "rgba(15, 10, 30, 0.50)",
+      border: "1px solid rgba(255, 255, 255, 0.08)",
+      backdropFilter: "blur(12px)",
+      WebkitBackdropFilter: "blur(12px)",
+      minWidth: 140,
+      gap: 0,
+    }}
+    onMouseEnter={(e) => {
+      (e.currentTarget as HTMLDivElement).style.border =
+        "1px solid rgba(224, 102, 255, 0.30)";
+      (e.currentTarget as HTMLDivElement).style.boxShadow =
+        "0 0 24px rgba(224, 102, 255, 0.08)";
+    }}
+    onMouseLeave={(e) => {
+      (e.currentTarget as HTMLDivElement).style.border =
+        "1px solid rgba(255, 255, 255, 0.08)";
+      (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+    }}
+  >
+    <div
+      style={{
+        height: 48,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Image
+        src={logoSrc}
+        alt={`${name} logo`}
+        width={logoWidth}
+        height={logoHeight}
+        style={{ objectFit: "contain", maxHeight: 48, width: "auto" }}
+      />
+    </div>
+    <span
+      className="text-sm font-semibold tracking-wide text-center"
+      style={{
+        color: "rgba(255, 255, 255, 0.80)",
+        fontFamily: "Space Grotesk, sans-serif",
+        marginTop: 8,
+        marginBottom: 12,
+      }}
+    >
+      {name}
+    </span>
+
+    <div className="flex items-center gap-4">
+      <a
+        href={discordHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${name} Discord`}
+        className="transition-colors duration-200"
+        style={{ color: "rgba(255, 255, 255, 0.45)" }}
+        onMouseEnter={(e) =>
+          ((e.currentTarget as HTMLAnchorElement).style.color = "#E066FF")
+        }
+        onMouseLeave={(e) =>
+          ((e.currentTarget as HTMLAnchorElement).style.color =
+            "rgba(255, 255, 255, 0.45)")
+        }
+      >
+        <FaDiscord className="text-xl" />
+      </a>
+
+      <div
+        style={{
+          width: "1px",
+          height: "14px",
+          background: "rgba(255, 255, 255, 0.12)",
+        }}
+      />
+
+      <a
+        href={instagramHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${name} Instagram`}
+        className="transition-colors duration-200"
+        style={{ color: "rgba(255, 255, 255, 0.45)" }}
+        onMouseEnter={(e) =>
+          ((e.currentTarget as HTMLAnchorElement).style.color = "#E066FF")
+        }
+        onMouseLeave={(e) =>
+          ((e.currentTarget as HTMLAnchorElement).style.color =
+            "rgba(255, 255, 255, 0.45)")
+        }
+      >
+        <FaInstagram className="text-xl" />
+      </a>
+    </div>
+  </div>
+);
+
+const Footer: React.FC = () => (
+  <footer
+    style={{
+      background: "#0a0614",
+    }}
+  >
+    <div className="mx-auto max-w-4xl px-6 py-10 flex flex-col items-center gap-8">
+
+      {/* Org pill cards */}
+      <div className="flex flex-wrap justify-center gap-4">
+        <OrgCard
+          name="AI Society"
+          logoSrc="/assets/images/AI_Society.png"
+          logoWidth={48}
+          logoHeight={48}
+          discordHref={SOCIALS.ai_discord}
+          instagramHref={SOCIALS.ai_instagram}
+        />
+        <OrgCard
+          name="SoDA"
+          logoSrc="/assets/images/soda.png"
+          logoWidth={56}
+          logoHeight={22}
+          discordHref={SOCIALS.soda_discord}
+          instagramHref={SOCIALS.soda_instagram}
+        />
+        <OrgCard
+          name="GDSC ASU"
+          logoSrc="/assets/images/gdsc.png"
+          logoWidth={48}
+          logoHeight={48}
+          discordHref={SOCIALS.gdsc_discord}
+          instagramHref={SOCIALS.gdsc_instagram}
+        />
+      </div>
+
+      {/* Copyright */}
+      <p
+        className="text-center text-sm leading-relaxed font-medium"
+        style={{ color: "rgba(255, 255, 255, 0.70)" }}
+      >
+        © 2026 Innovation Hacks. Presented by AI Society × SoDA × GDSC ASU.
+      </p>
+
+      {/* Utility links */}
+      <div className="flex items-center gap-6 text-sm" style={{ color: "rgba(255, 255, 255, 0.60)" }}>
+        <a
+          href={SOCIALS.email}
+          className="transition-colors duration-200 hover:text-white"
+          onMouseEnter={(e) =>
+            ((e.currentTarget as HTMLAnchorElement).style.color = "#E066FF")
+          }
+          onMouseLeave={(e) =>
+            ((e.currentTarget as HTMLAnchorElement).style.color =
+              "rgba(255, 255, 255, 0.45)")
+          }
+        >
+          Contact Us
+        </a>
+
+        <div
+          style={{
+            width: "1px",
+            height: "12px",
+            background: "rgba(255, 255, 255, 0.15)",
+          }}
+        />
+
+        <a
+          href={SOCIALS.mlh_coc}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="transition-colors duration-200"
+          onMouseEnter={(e) =>
+            ((e.currentTarget as HTMLAnchorElement).style.color = "#E066FF")
+          }
+          onMouseLeave={(e) =>
+            ((e.currentTarget as HTMLAnchorElement).style.color =
+              "rgba(255, 255, 255, 0.45)")
+          }
+        >
+          MLH Code of Conduct
+        </a>
+      </div>
+    </div>
+  </footer>
+);
 
 export default Footer;
