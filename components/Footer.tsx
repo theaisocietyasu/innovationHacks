@@ -32,10 +32,10 @@ const OrgCard: React.FC<OrgCardProps> = ({ name, logoSrc, discordHref, instagram
   <div
     className="group flex flex-col items-center rounded-2xl px-6 py-4 transition-all duration-300"
     style={{
-      background: "rgba(15, 10, 30, 0.50)",
-      border: "1px solid rgba(255, 255, 255, 0.08)",
-      backdropFilter: "blur(12px)",
-      WebkitBackdropFilter: "blur(12px)",
+      background: "rgba(15, 10, 30, 0.65)",
+      border: "1px solid rgba(255, 255, 255, 0.10)",
+      backdropFilter: "blur(14px) saturate(160%)",
+      WebkitBackdropFilter: "blur(14px) saturate(160%)",
       minWidth: 140,
       gap: 0,
     }}
