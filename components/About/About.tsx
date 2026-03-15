@@ -37,12 +37,13 @@ const About = () => {
           <p className="text-white/80">Prize categories</p>
         </div>
         <div className="basis-1/3 border-2 rounded-2xl w-full p-5 glassy-effect">
-          <h1 className="text-4xl my-2 font-semibold text-rose-500">
+          <h1 className="text-4xl my-2 font-semibold" style={{ color: "#E066FF" }}>
             <CountUp
               start={0}
               end={36}
               duration={4}
-              className="font-bold text-rose-500"
+              className="font-bold"
+              style={{ color: "#E066FF" }}
               enableScrollSpy={true}
             />
             +
