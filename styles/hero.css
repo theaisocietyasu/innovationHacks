@@ -1,91 +1,312 @@
-.heroContainer1 {
+/* ─── Main Glass Panel ─────────────────────────────── */
+.hero-glass-panel {
   position: relative;
-  /* width: 500px; */
-  /* Adjust width as needed */
-  /* height: 420px; */
-  /* Adjust height as needed */
-}
-
-.heroContainer1::before {
-  content: "";
-  position: absolute;
-  top: 15%;
-  left: -15%;
-  width: 350px;
-  height: 300px;
-  border-radius: 50%;
-  background-color: #4462dc;
-  background: linear-gradient(
-    343deg,
-    #ba3554 0%,
-    #ba3554 100%,
-  );
-  filter: blur(180px);
-  z-index: -1;
-  /* animation: leviation 1.5s ease-in-out infinite alternate; */ 
-}
-.heroContainer1::after {
-  content: "";
-  position: absolute;
-  top: 15%;
-  left: -25%;
-  width: 350px;
-  height: 300px;
-  border-radius: 50%;
-  background-color: #4462dc;
-  background: linear-gradient(
-    343deg,
-    #ba3554 0%,
-    #ba3554 100%,
-  );
-  filter: blur(220px);
-  z-index: -1;
-  /* animation: leviation 1.5s ease-in-out infinite alternate; */ 
-}
-
-@keyframes leviation {
-  0% {
-    transform: translate(0px, -20px);
-  }
-  100% {
-    transform: translate(0px, 20px);
-  }
-}
-
-.gradient-text {
-  background: linear-gradient(45deg, #FF1B6B, #45CAFF);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.gradient-background {
-  background: linear-gradient(180deg, #0A0A0A 0%, #1A1A1A 100%);
-  position: relative;
+  width: min(95vw, 1080px);
+  margin: 0 auto;
+  margin-top: calc(64px + 6vh);
+  margin-bottom: 6vh;
+  border-radius: 28px;
   overflow: hidden;
+  background: rgba(15, 10, 30, 0.65);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-top-color: rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.08) inset,
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 0 80px rgba(160, 80, 220, 0.15),
+    0 0 120px rgba(80, 140, 255, 0.1);
 }
 
-.gradient-background::before {
+/* Specular top-edge highlight */
+.hero-glass-panel::before {
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at center, rgba(224, 102, 255, 0.15) 0%, transparent 70%);
-  pointer-events: none;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.5) 25%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0.5) 75%,
+    transparent 100%
+  );
+  z-index: 10;
 }
 
-/* Animation for the gradient effect */
-@keyframes gradientAnimation {
-  0% {
-    background-position: 0% 50%;
+/* Chromatic color bleed corners */
+.hero-glass-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(255, 80, 200, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 100% 0%, rgba(80, 160, 255, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba(140, 60, 255, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Inner padding */
+.glass-panel-inner {
+  position: relative;
+  z-index: 2;
+  padding: 52px 64px 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* ─── Org Logos Row ─────────────────────────────────── */
+.org-logos-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 44px;
+}
+
+.org-logos-row img {
+  display: block;
+  width: 100%;
+  max-width: 660px;
+  height: auto;
+  padding: 0 8px;
+  opacity: 1;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.5)) brightness(1.08);
+}
+
+/* ─── Title Text ─────────────────────────────────────── */
+.hero-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2.4rem, 5.8vw, 5.6rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  text-align: center;
+  white-space: nowrap;
+  margin: 0 0 24px;
+  text-shadow:
+    0 0 60px rgba(224, 102, 255, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Subtitle ───────────────────────────────────────── */
+.hero-subtitle {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.1rem, 2.4vw, 1.55rem);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: center;
+  margin: 0 0 38px;
+  line-height: 1.6;
+}
+
+.hero-subtitle strong {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 600;
+}
+
+/* ─── Countdown Glass Capsules ──────────────────────── */
+.glass-countdown-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.glass-countdown-unit {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-top-color: rgba(255, 255, 255, 0.26);
+  backdrop-filter: blur(9.1px);
+  -webkit-backdrop-filter: blur(9.1px);
+  border-radius: 20px;
+  padding: 24px 34px;
+  min-width: 114px;
+  text-align: center;
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.05) inset,
+    0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.glass-countdown-unit .unit-value {
+  display: block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+  text-shadow: 0 0 24px rgba(224, 102, 255, 0.55);
+}
+
+.glass-countdown-unit .unit-label {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 10px;
+}
+
+/* ─── Glass CTA Buttons ─────────────────────────────── */
+.glass-buttons-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 480px;
+  margin-bottom: 28px;
+}
+
+.glass-button {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border-radius: 100px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-top-color: rgba(255, 255, 255, 0.32);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.06) inset,
+    0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.glass-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.1) inset,
+    0 8px 28px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(224, 102, 255, 0.18);
+}
+
+.glass-button:active {
+  transform: translateY(0);
+}
+
+.glass-button--devpost {
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.06) inset,
+    0 4px 20px rgba(0, 62, 84, 0.6),
+    0 0 30px rgba(0, 100, 140, 0.18);
+}
+
+.glass-button--discord {
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.06) inset,
+    0 4px 20px rgba(88, 101, 242, 0.5),
+    0 0 30px rgba(88, 101, 242, 0.22);
+}
+
+/* ─── Register CTA Button ────────────────────────────── */
+.hero-register-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 17px 48px;
+  border-radius: 100px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-decoration: none;
+  overflow: hidden;
+  background: rgba(160, 80, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-top-color: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.07) inset,
+    0 4px 24px rgba(160, 80, 255, 0.35),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.hero-register-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+}
+
+.hero-register-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.12) inset,
+    0 8px 32px rgba(160, 80, 255, 0.5),
+    0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.hero-register-btn:active {
+  transform: translateY(0);
+}
+
+/* ─── Mobile ─────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .hero-glass-panel {
+    width: 96vw;
+    border-radius: 22px;
+    margin-top: calc(56px + 3vh);
   }
-  50% {
-    background-position: 100% 50%;
+
+  .hero-title {
+    white-space: normal;
+    font-size: clamp(2.2rem, 10vw, 3.5rem);
   }
-  100% {
-    background-position: 0% 50%;
+
+  .glass-panel-inner {
+    padding: 32px 24px 28px;
+  }
+
+  .org-logos-row img {
+    max-width: 360px;
+    padding: 0 4px;
+  }
+
+  .glass-countdown-unit {
+    min-width: 62px;
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+
+  .glass-buttons-row {
+    flex-direction: column;
   }
 }

@@ -1,0 +1,284 @@
+/* register.css — glassmorphic form styles for the registration page */
+
+/* ── Page wrapper — flex column, centers card horizontally ──── */
+.register-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100dvh;          /* dvh = accounts for mobile browser chrome */
+  padding: 88px 16px 48px;     /* top: clear navbar; sides: mobile-safe */
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* ── Card container ─────────────────────────────────────────── */
+.register-card {
+  width: 100%;
+  max-width: 720px;
+  /* no margin: auto needed — parent flex handles it */
+}
+
+/* ── Glass panel — darker + more opaque for legibility ─────── */
+.hero-glass-panel {
+  background: rgba(8, 6, 18, 0.82);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1.5px solid rgba(224, 102, 255, 0.22);
+  border-top-color: rgba(255, 255, 255, 0.18);
+  border-radius: 24px;
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.06) inset,
+    0 8px 40px rgba(0, 0, 0, 0.65),
+    0 0 80px rgba(160, 80, 255, 0.10);
+  width: 100%;
+}
+
+.glass-panel-inner {
+  padding: 36px 40px;
+}
+
+@media (max-width: 640px) {
+  .register-page-wrapper {
+    padding: 80px 12px 40px;
+  }
+  .glass-panel-inner {
+    padding: 24px 20px;
+  }
+}
+
+/* ── Hero title (scoped to register context) ─────────────────── */
+.hero-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+/* ── Org logos row ───────────────────────────────────────────── */
+.org-logos-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* ── Register button ─────────────────────────────────────────── */
+.hero-register-btn {
+  background: rgba(160, 80, 255, 0.22);
+  border: 1px solid rgba(160, 80, 255, 0.45);
+  border-radius: 9999px;
+  color: #ffffff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 14px 32px;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, opacity 0.2s;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hero-register-btn:hover:not(:disabled) {
+  background: rgba(160, 80, 255, 0.38);
+  box-shadow: 0 0 24px rgba(160, 80, 255, 0.3);
+}
+
+.hero-register-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── Section title dividers ──────────────────────────────────── */
+.register-section-title {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(160, 80, 255, 0.7);
+  margin: 24px 0 16px;
+  border-bottom: 1px solid rgba(160, 80, 255, 0.2);
+  padding-bottom: 8px;
+  font-weight: 600;
+}
+
+/* ── Labels ──────────────────────────────────────────────────── */
+.register-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ── Shared base — inputs and selects ────────────────────────── */
+.register-input,
+.register-select {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ── Focus state — persists for entire typing experience ─────── */
+.register-input:focus,
+.register-select:focus,
+.register-input:focus:not(:placeholder-shown),
+.register-select:focus:not(:placeholder-shown) {
+  outline: none;
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(224, 102, 255, 0.70);
+  box-shadow:
+    0 0 0 3px rgba(224, 102, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ── Filled / has-value state (only when NOT focused) ────────── */
+.register-input:not(:placeholder-shown):not(:focus) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Error state ─────────────────────────────────────────────── */
+.register-input.error,
+.register-select.error {
+  border-color: rgba(255, 80, 80, 0.70);
+  box-shadow: 0 0 0 3px rgba(255, 80, 80, 0.12);
+}
+
+/* ── Text inputs ─────────────────────────────────────────────── */
+.register-input {
+  border-radius: 10px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  padding: 12px 16px;
+  width: 100%;
+}
+
+.register-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Select dropdowns ────────────────────────────────────────── */
+.register-select {
+  border-radius: 10px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  padding: 12px 16px;
+  width: 100%;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+}
+
+.register-select option {
+  background: #1a1a2e;
+  color: #ffffff;
+}
+
+/* ── Checkbox labels ─────────────────────────────────────────── */
+.register-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.register-checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  accent-color: #E066FF;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* ── Dropzone ────────────────────────────────────────────────── */
+.register-dropzone {
+  border: 2px dashed rgba(160, 80, 255, 0.4);
+  border-radius: 14px;
+  padding: 32px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.register-dropzone:hover {
+  border-color: rgba(160, 80, 255, 0.7);
+  background: rgba(160, 80, 255, 0.07);
+}
+
+.register-dropzone--active {
+  border-color: rgba(160, 80, 255, 0.7);
+  background: rgba(160, 80, 255, 0.07);
+}
+
+/* ── Error messages ──────────────────────────────────────────── */
+.register-error {
+  color: #ff6b6b;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  display: block;
+}
+
+/* ── School autocomplete dropdown ───────────────────────────── */
+.school-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(15, 10, 35, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 100;
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  backdrop-filter: blur(20px);
+}
+
+.school-dropdown-item {
+  padding: 10px 14px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.school-dropdown-item:hover {
+  background: rgba(160, 100, 255, 0.2);
+  color: #fff;
+}
+
+/* ── Success state ───────────────────────────────────────────── */
+.register-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 48px 24px;
+  text-align: center;
+}

@@ -7,7 +7,44 @@
     transition-property: max-height;
     transition-timing-function: ease-in-out;
   }
-  
+
   .rotate-180 {
     transition: transform 0.3s ease-in-out;
   }
+
+/* FAQ accordion card styles */
+.faq-item {
+  background: rgba(15, 10, 30, 0.65);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  padding: 4px 20px;
+  transition: background 0.25s ease;
+}
+
+.faq-item:last-child {
+  margin-bottom: 0;
+}
+
+.faq-item.faq-item--open {
+  background: rgba(15, 10, 30, 0.65);
+}
+
+.faq-item .faq-question {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.faq-item .faq-answer {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.faq-item .faq-arrow {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.faq-title {
+  color: #ffffff;
+  font-weight: 700;
+}

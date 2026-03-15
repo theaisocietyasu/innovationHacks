@@ -8,17 +8,24 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        accent: "#E066FF",
+        "accent-dim": "#7B61FF",
+      },
       fontFamily: {
         logo: ["Space Grotesk", "serif"],
         content: ["Space Grotesk", "serif"],
         date: ["ShadedFont", "serif"],
         monte: ["Monteserrat", "sans-serif"],
         poppins: ["Poppins", "sans-serif"],
+        nimbus: ["TAN-NIMBUS", "serif"],
+        mancunia: ["Mancunia-Outline", "serif"],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        "gradient-accent": "linear-gradient(135deg, #E066FF, #7B61FF)",
       },
     },
     screens: {

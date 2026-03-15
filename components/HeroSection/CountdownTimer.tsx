@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "../../styles/colors.css";
 
 const CountdownTimer = () => {
   const [days, setDays] = useState(0);
@@ -7,7 +6,7 @@ const CountdownTimer = () => {
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
 
-  const setTime = (time: any) => {
+  const setTime = (time: { days: number; hours: number; minutes: number; seconds: number }) => {
     setDays(time.days);
     setHours(time.hours);
     setMinutes(time.minutes);
@@ -18,22 +17,21 @@ const CountdownTimer = () => {
     const difference = endDate.getTime() - Date.now();
 
     if (difference > 0) {
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor(
+      const d = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const h = Math.floor(
         (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
       );
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+      const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((difference % (1000 * 60)) / 1000);
 
-      setTime({ days, hours, minutes, seconds });
+      setTime({ days: d, hours: h, minutes: m, seconds: s });
     } else {
-      // Timer expired
       setTime({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     }
   };
 
   useEffect(() => {
-    const endDate = new Date("2025-04-19T09:30:00-07:00"); // Arizona time (MST/PDT)
+    const endDate = new Date("2026-04-03T09:00:00-07:00"); // April 3rd 2026, Arizona time
     const intervalId = setInterval(() => {
       calculateTimeRemaining(endDate);
     }, 1000);
@@ -44,22 +42,22 @@ const CountdownTimer = () => {
   }, []);
 
   return (
-    <div className="flex justify-center text-2xl md:text-7xl flex-row rounded-3xl space-x-8">
-      <div className="text-center">
-        <div className="text-[#E066FF] mb-2">{days}</div>
-        <div className="text-sm text-white/80">Days</div>
+    <div className="glass-countdown-row">
+      <div className="glass-countdown-unit">
+        <span className="unit-value">{String(days).padStart(2, "0")}</span>
+        <span className="unit-label">Days</span>
       </div>
-      <div className="text-center">
-        <div className="text-[#E066FF] mb-2">{hours}</div>
-        <div className="text-sm text-white/80">Hours</div>
+      <div className="glass-countdown-unit">
+        <span className="unit-value">{String(hours).padStart(2, "0")}</span>
+        <span className="unit-label">Hours</span>
       </div>
-      <div className="text-center">
-        <div className="text-[#E066FF] mb-2">{minutes}</div>
-        <div className="text-sm text-white/80">Minutes</div>
+      <div className="glass-countdown-unit">
+        <span className="unit-value">{String(minutes).padStart(2, "0")}</span>
+        <span className="unit-label">Mins</span>
       </div>
-      <div className="text-center">
-        <div className="text-[#E066FF] mb-2">{seconds}</div>
-        <div className="text-sm text-white/80">Seconds</div>
+      <div className="glass-countdown-unit">
+        <span className="unit-value">{String(seconds).padStart(2, "0")}</span>
+        <span className="unit-label">Secs</span>
       </div>
     </div>
   );

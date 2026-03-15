@@ -5,8 +5,8 @@ import "../../styles/hero.css";
 
 export default function HeroSection() {
   return (
-    <div className="">
-        <Content />
-    </div>
+    <section className="hero-glass-panel">
+      <Content />
+    </section>
   );
 }

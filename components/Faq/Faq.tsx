@@ -2,13 +2,14 @@
 import { useState } from "react";
 import { Container } from "./Container";
 import "../../styles/faq/background.css";
+import "../../styles/faq.css";
 
 const HacksFaq = [
   {
     question: "Who can participate?",
     answer: (
       <>
-        Innovation Hacks 2025 is open to a diverse range of participants,
+        Innovation Hacks 2026 is open to a diverse range of participants,
         including students, developers, designers, and tech enthusiasts.
         However, participants must be part of Arizona State University. Whether
         you're a beginner or an experienced coder, there's a place for you here!
@@ -30,7 +31,7 @@ const HacksFaq = [
     question: "Do you provide travel reimbursement?",
     answer: (
       <>
-        No, Innovation Hacks 2025 does not offer travel reimbursement for
+        No, Innovation Hacks 2026 does not offer travel reimbursement for
         participants. Participants are responsible for their travel expenses,
         and we recommend planning accordingly.
       </>
@@ -40,17 +41,17 @@ const HacksFaq = [
     question: "Do I need to know how to code?",
     answer: (
       <>
-        Yes, Innovation Hacks 2025 welcomes participants from diverse
+        Yes, Innovation Hacks 2026 welcomes participants from diverse
         backgrounds, including those new to coding. We encourage learning and
         provide resources and mentorship to help you succeed!
       </>
     ),
   },
   {
-    question: <>What will I get after attending Innovation Hacks 2025?</>,
+    question: <>What will I get after attending Innovation Hacks 2026?</>,
     answer: (
       <>
-        Innovation Hacks 2025 offers a dynamic platform for learning and
+        Innovation Hacks 2026 offers a dynamic platform for learning and
         collaboration. You'll gain hands-on experience, network with industry
         professionals, receive mentorship, and have the chance to win exciting
         prizes. Plus, you'll create lasting connections in the tech community.
@@ -70,7 +71,7 @@ const HacksFaq = [
     question: <>Are team members from other colleges allowed? </>,
     answer: (
       <>
-        No, Innovation Hacks 2025 welcomes participants from diverse
+        No, Innovation Hacks 2026 welcomes participants from diverse
         backgrounds, only from Arizona State University.
       </>
     ),
@@ -104,10 +105,10 @@ const HacksFaq = [
 
 export default function FAQ() {
   return (
-    <div className="mt-32 w-full items-center justify-center flex flex-col gap-12  p-10 ">
+    <div className="mt-20 w-full items-center justify-center flex flex-col gap-12  p-10 ">
       <div className="text-center   flex flex-col">
         <div className="my-8 text-white text-xl sm:text-2xl md:text-4xl">
-          <h2 className="text-2xl text-center font-bold text-white dark:text-white md:text-3xl lg:text-4xl font-logo">
+          <h2 className="text-2xl text-center font-bold md:text-3xl lg:text-4xl font-logo faq-title">
             Frequently Asked Questions
           </h2>
         </div>
@@ -127,23 +128,21 @@ export function Disclosures({ full = false }) {
   };
 
   return (
-    <div className="divide-y divide-zinc-200 border-y border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+    <div className={`w-full ${full ? "" : "max-w-5xl"}`}>
       {HacksFaq.map((item, i) => (
         <div
           key={String(i)}
-          className={`mx-auto  cursor-pointer text-lg ${
-            full ? "" : "max-w-5xl"
-          }`}
+          className={`faq-item cursor-pointer text-lg${openIndex === i ? " faq-item--open" : ""}`}
         >
           {/* rome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
           <div
-            className="flex w-full items-start justify-between py-6 text-left text-gray-400"
+            className="flex w-full items-start justify-between py-4 text-left"
             onClick={() => handleToggle(i)}
           >
-            <span className="font-medium w-[62vw] text-white dark:text-white">
+            <span className="font-medium w-[62vw] faq-question">
               {item.question}
             </span>
-            <span className="ml-6 flex h-7 items-center">
+            <span className="ml-6 flex h-7 items-center faq-arrow">
               <svg
                 className={`arrow-down h-6 w-6 transform duration-300 ${
                   openIndex === i ? "rotate-180" : "rotate-0"
@@ -164,12 +163,8 @@ export function Disclosures({ full = false }) {
             </span>
           </div>
           {openIndex === i && (
-            <div
-              className={`pr-12 duration-300 ease-in-out ${
-                openIndex === i ? "" : "hidden"
-              }`}
-            >
-              <p className="pb-6 text-base text-white dark:text-gray-400">
+            <div className="pr-12 duration-300 ease-in-out">
+              <p className="pb-4 text-base faq-answer">
                 {item.answer}
               </p>
             </div>

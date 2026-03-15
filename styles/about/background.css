@@ -12,7 +12,7 @@
   width: 550px;
   height: 300px;
   border-radius: 50%;
-  background: linear-gradient(343deg, #ba3554 0%, #ba3554 100%);
+  background: linear-gradient(343deg, rgba(186, 53, 84, 0.15) 0%, rgba(186, 53, 84, 0.15) 100%);
   filter: blur(440px);
   z-index: -1;
   /* animation: leviation 2s ease-in-out infinite alternate; */
@@ -26,7 +26,7 @@
   width: 550px;
   height: 300px;
   border-radius: 50%;
-  background: linear-gradient(343deg, #ba3554 0%, #ba3554 100%);
+  background: linear-gradient(343deg, rgba(186, 53, 84, 0.15) 0%, rgba(186, 53, 84, 0.15) 100%);
   filter: blur(460px);
   z-index: -1;
   /* animation: leviation 2s ease-in-out infinite alternate; */

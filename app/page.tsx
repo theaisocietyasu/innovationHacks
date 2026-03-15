@@ -1,8 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import Navbar from "../components/Navbar";
-import Timeline from "@/components/Timeline/Timeline";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection/HeroSection";
 import BackGround from "@/components/BackGround";
@@ -13,7 +11,7 @@ import Themes from "@/components/ThemesSection/Themes";
 import PreLoader from "@/components/PreLoader";
 import TeamSection from "@/components/TeamSection/TeamSection";
 import SponsorsSection from "@/components/SponsorsSection/SponsorsSection";
-import Timeline2 from "@/components/Timeline/Timeline2";
+import Schedule from "@/components/Timeline/Schedule";
 import TweetFeed from "@/components/Tweets/TweetFeed";
 import About from "@/components/About/About";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -61,27 +59,13 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const sectionIds = ["about", "themes", "schedule", "sponsors", "prizes", "team", "rsvp", "faq"];
+
     const handleScroll = () => {
-      const about = document.getElementById("about");
-      const themes = document.getElementById("themes");
-      const schedule = document.getElementById("schedule");
-      const sponsors = document.getElementById("sponsors");
-      const prizes = document.getElementById("prizes");
-      const team = document.getElementById("team");
-      const rsvp = document.getElementById("rsvp");
-      const faq = document.getElementById("faq");
+      const offsets = sectionIds.map((id) => document.getElementById(id)?.offsetTop ?? Infinity);
+      const [aboutOffset, themesOffset, scheduleOffset, sponsersOffset, prizesOffset, teamOffset, rsvpOffset, faqOffset] = offsets;
 
-      if (about && themes && schedule && sponsors && prizes && team && rsvp && faq) {
-        const aboutOffset = about.offsetTop;
-        const themesOffset = themes.offsetTop;
-        const scheduleOffset = schedule.offsetTop;
-        const sponsersOffset = sponsors.offsetTop;
-        const prizesOffset = prizes.offsetTop;
-        const teamOffset = team.offsetTop;
-        const rsvpOffset = rsvp.offsetTop;
-        const faqOffset = faq.offsetTop;
-
-        // console.log(aboutOffset, themesOffset, scheduleOffset, sponsersOffset, prizesOffset, teamOffset, faqOffset);
+      if (offsets.some((o) => o !== Infinity)) {
         handleScrollSection(
           aboutOffset,
           themesOffset,
@@ -103,10 +87,19 @@ export default function Home() {
   }, [activeSection]);
 
   return (
-    <main className="overflow-x-hidden bg-[#0D0D0D] relative">
-      {/* Main gradient overlay */}
-      <div className="fixed inset-0 bg-gradient-to-b from-purple-900/30 via-[#0D0D0D] to-[#0D0D0D] pointer-events-none" />
-      
+    <main className="overflow-x-hidden relative">
+      {/* Full-page background image */}
+      <div
+        id="page-bg"
+        className="fixed inset-0 -z-10"
+        style={{
+          backgroundImage: "url('/assets/images/glassmorphbg.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center center",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+
       {/* Content container */}
       <div className="relative z-10">
         <Navbar activeSection={activeSection}/>
@@ -121,7 +114,7 @@ export default function Home() {
           </div> */}
 
           <div id="schedule">
-            <Timeline2 />
+            <Schedule />
           </div>
 
           <div id="sponsors">
@@ -142,7 +135,22 @@ export default function Home() {
             <Faq />
           </div>
         </div>
-        <Footer />
+        <div style={{ position: "relative" }}>
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              top: -100,
+              left: 0,
+              right: 0,
+              height: 100,
+              background: "linear-gradient(to bottom, transparent, #0a0614)",
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          />
+          <Footer />
+        </div>
       </div>
     </main>
   );

@@ -13,7 +13,7 @@
   height: 200px;
   border-radius: 50%;
   background-color: rgb(120, 47, 152);
-  background: linear-gradient(343deg, rgba(120, 47, 152, 1) 0%, rgba(5, 50, 129, 1) 82%, rgba(52, 39, 100, 1) 100%);
+  background: linear-gradient(343deg, rgba(120, 47, 152, 0.15) 0%, rgba(5, 50, 129, 0.15) 82%, rgba(52, 39, 100, 0.15) 100%);
   filter: blur(300px);
   z-index: -1;
 }
@@ -27,7 +27,7 @@
   height: 600px;
   border-radius: 50%;
   background-color: rgb(120, 47, 152);
-  background: linear-gradient(343deg, rgba(120, 47, 152, 1) 0%, rgba(5, 50, 129, 1) 82%, rgba(52, 39, 100, 1) 100%);
+  background: linear-gradient(343deg, rgba(120, 47, 152, 0.15) 0%, rgba(5, 50, 129, 0.15) 82%, rgba(52, 39, 100, 0.15) 100%);
   filter: blur(370px);
   z-index: -1;
 } */
