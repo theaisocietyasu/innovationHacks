@@ -8,7 +8,7 @@ const SOCIALS = {
   soda_instagram: "https://instagram.com/soda.asu",
   soda_discord:
     "https://discord.gg/the-software-developers-association-762811961238618122",
-  // GDSC
+  // GDG ASU
   gdsc_instagram: "https://www.instagram.com/asu.dsc/",
   gdsc_discord: "https://discord.gg/jE224Skdvx",
   // AI Society
@@ -141,12 +141,20 @@ const Footer: React.FC = () => (
       {/* Org pill cards */}
       <div className="flex flex-wrap justify-center gap-4">
         <OrgCard
-          name="AI Society"
+          name="The AI Society"
           logoSrc="/assets/images/AI_Society.png"
           logoWidth={48}
           logoHeight={48}
           discordHref={SOCIALS.ai_discord}
           instagramHref={SOCIALS.ai_instagram}
+        />
+        <OrgCard
+          name="GDG ASU"
+          logoSrc="/assets/images/gdsc.png"
+          logoWidth={48}
+          logoHeight={48}
+          discordHref={SOCIALS.gdsc_discord}
+          instagramHref={SOCIALS.gdsc_instagram}
         />
         <OrgCard
           name="SoDA"
@@ -156,14 +164,6 @@ const Footer: React.FC = () => (
           discordHref={SOCIALS.soda_discord}
           instagramHref={SOCIALS.soda_instagram}
         />
-        <OrgCard
-          name="GDSC ASU"
-          logoSrc="/assets/images/gdsc.png"
-          logoWidth={48}
-          logoHeight={48}
-          discordHref={SOCIALS.gdsc_discord}
-          instagramHref={SOCIALS.gdsc_instagram}
-        />
       </div>
 
       {/* Copyright */}
@@ -171,7 +171,7 @@ const Footer: React.FC = () => (
         className="text-center text-sm leading-relaxed font-medium"
         style={{ color: "rgba(255, 255, 255, 0.70)" }}
       >
-        © 2026 Innovation Hacks. Presented by AI Society × SoDA × GDSC ASU.
+        © 2026 Innovation Hacks. Presented by The AI Society × GDG ASU × SoDA.
       </p>
 
       {/* Utility links */}

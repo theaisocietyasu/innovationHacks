@@ -93,7 +93,7 @@ export default function Home() {
         id="page-bg"
         className="fixed inset-0 -z-10"
         style={{
-          backgroundImage: "url('/assets/images/glassmorphbg.jpg')",
+          backgroundImage: "url('/assets/images/newbg.png')",
           backgroundSize: "cover",
           backgroundPosition: "center center",
           backgroundRepeat: "no-repeat",

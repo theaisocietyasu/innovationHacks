@@ -286,7 +286,7 @@ export default function RegisterPage() {
                 <div className="org-logos-row">
                   <Image
                     src="/assets/images/clubs.png"
-                    alt="Organising clubs — The AI Society, GDSC, SoDA"
+                    alt="Organising clubs — The AI Society, GDG ASU, SoDA"
                     width={320}
                     height={60}
                     style={{ objectFit: "contain", maxWidth: "100%" }}

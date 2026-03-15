@@ -137,7 +137,7 @@ activeSection === "about" ? "before:w-full bg-red-500" : "" }`}
           >
             <h1 className="-mt-40 mb-10 text-sm flex gap-2 items-center"/>
               {/* <WiStormShowers className="text-2xl" /> */}
-              {/* duhacks | gdsc */}
+              {/* duhacks | gdg asu */}
             
             <a
               href="https://duhacks.tech/#about"
