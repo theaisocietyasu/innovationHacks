@@ -8,7 +8,7 @@ type Sponsor = {
   link?: string;
   imageDimension?: string;
   scale?: string;
-  class?: string;
+  style?: React.CSSProperties;
 };
 
 type SponsorsGroup = {
@@ -66,22 +66,19 @@ export default function SponsorsSection2() {
     // ],
     gold: [
       {
+        src: "/sponsors_logos/google.png",
+        alt: "Google LOGO",
+        link: "https://google.com",
+      },
+      {
         src: "/sponsors_logos/amazon.svg",
         alt: "Amazon LOGO",
-        link: "http://amazon.com//",
-        class: "scale-[0.4] md:scale-[0.3]",
+        link: "https://aws.amazon.com",
       },
       {
-        src: "/sponsors_logos/matlab.png",
-        alt: "Mathworks LOGO",
-        link: "https://www.mathworks.com/",
-        class: "scale-[0.25] md:scale-[0.2]",
-      },
-      {
-        src: "/sponsors_logos/qruil.svg",
-        alt: "Qruil LOGO",
-        link: "https://qruil.com/",
-        class: "scale-[0.25] md:scale-[0.2]",
+        src: "/sponsors_logos/statefarmm.png",
+        alt: "State Farm LOGO",
+        link: "https://statefarm.com",
       },
     ],
     event: [
@@ -89,57 +86,46 @@ export default function SponsorsSection2() {
       //   src : "/sponsors_logos/Quant.png",
       //   alt: "QUANT QUESTIONS LOGO",
       //   link: "https://quantquestions.io",
-      //   class: "scale-[0.25] md:scale-[0.3]",
       // },
       // {
       //   src : "/sponsors_logos/sunhacks.png",
       //   alt: "SUNHACKS LOGO",
       //   link: "https://sunhacks.io",
-      //   class: "scale-[0.25] md:scale-[0.3]",
       // },
       // {
       //   src : "/sponsors_logos/celsius.svg",
       //   alt: "CELSIUS LOGO",
       //   link: "https://www.celsius.com",
-      //   class: "scale-[0.5] md:scale-[0.6]",
       // },
+      {
+        src: "/sponsors_logos/mlh.svg",
+        alt: "MLH LOGO",
+        link: "https://mlh.io",
+      },
+      {
+        src: "/sponsors_logos/pure_buttons.svg",
+        alt: "PureButtons LOGO",
+        link: "https://purebuttons.com",
+        style: { filter: "invert(1)" },
+      },
       {
         src: "/assets/images/AI_Society.png",
         alt: "AI SOCIETY LOGO",
-        link: "https://ais-website-mu.vercel.app/",
-        class: "scale-[0.3] md:scale-[0.3]",
+        link: "https://www.ais-asu.com/",
+        style: { width: "80px", height: "80px" },
       },
       {
-        src: "/assets/images/gdsc.svg",
+        src: "/assets/images/gdsc.png",
         alt: "GDSC Logo",
         link: "https://students.engineering.asu.edu/clubs/gdsc/",
-        class: "scale-[0.5] md:scale-[1.2]",
-      },
-      {
-        src: "/assets/images/acm.png",
-        alt: "ACM Logo",
-        link: "https://www.linkedin.com/company/acm-asu",
-        class: "scale-[0.3] md:scale-[0.4]",
+        style: { width: "80px", height: "80px" },
       },
       {
         src: "/assets/images/soda.png",
         alt: "SoDA LOGO",
         link: "https://thesoda.io/",
-        class: "scale-[0.5] md:scale-[0.3]",
       },
-      {
-        src: "/sponsors_logos/sunhacks.png",
-        alt: "SUNHACKS LOGO",
-        link: "https://sunhacks.io",
-        class: "scale-[0.25] md:scale-[0.3]",
-      },
-      /* 
-       {
-        src : "/sponsors_logos/mlh.svg",
-        alt: "MLH LOGO",
-        link: "https://mlh.io",
-        class: "scale-[0.7] md:scale-[0.6]",
-      },
+      /*
      {
        src : "/sponsors_logos/es.png",
        alt: "ETHICAL SPECTACLE LOGO",
@@ -160,13 +146,13 @@ export default function SponsorsSection2() {
     emerald: { imgSize: "w-48 h-16 sm:h-full sm:w-full" },
     diamond: { imgSize: "w-48 h-16 sm:h-full sm:w-full" },
     gold: {
-      imgSize: "h-[120px] w-[250px] px-2 py-1 md:h-[160px] md:w-[500px]",
+      imgSize: "h-[90px] w-[250px] px-2 py-1 md:h-[120px] md:w-[500px]",
     },
     sponsors: {
-      imgSize: "h-[120px] w-[250px] px-2 py-1 md:h-[160px] md:w-[500px]",
+      imgSize: "h-[90px] w-[250px] px-2 py-1 md:h-[120px] md:w-[500px]",
     },
     event: {
-      imgSize: "h-[80px] w-[250px] px-2 py-1 md:h-[140px] md:w-[420px]",
+      imgSize: "h-[60px] w-[250px] px-2 py-1 md:h-[105px] md:w-[420px]",
     },
     silver: {
       imgSize: "h-[60px] w-[200px] px-2 py-1 md:h-[120px] md:w-[300px]",
@@ -203,7 +189,7 @@ export default function SponsorsSection2() {
                 rel="noopener noreferrer"
               >
                 <div
-                  className={`m-4 glassy-div bg-cover bg-center flex items-center justify-center no-repeat rounded-2xl md:p-5 p-1 hover-effect-${category} ${
+                  className={`m-4 glassy-div bg-cover bg-center flex items-center justify-center no-repeat rounded-2xl md:p-5 p-1 overflow-hidden hover-effect-${category} ${
                     sponsor.link ? "cursor-pointer" : "cursor-default"
                   } ${categorySizes[category]?.imgSize}`}
                   onClick={
@@ -217,8 +203,8 @@ export default function SponsorsSection2() {
                   <img
                     alt=""
                     src={`${sponsor.src}`}
-                    className={`
-                ${sponsor.class ? sponsor.class : "h-full w-full "}`}
+                    className="w-full h-full object-contain p-3"
+                    style={sponsor.style}
                   />
                 </div>
               </a>
