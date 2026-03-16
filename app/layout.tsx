@@ -8,7 +8,10 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Innovation Hacks 2026",
   description: "Innovation Hacks 2026 - ASU's Premier Student-Led Hackathon by The AI Society, GDG ASU, and SoDA",
-  icons: "/assets/images/logo-dark-compact.svg",
+  icons: {
+    icon: "/assets/images/innovationhacklogo2026.png",
+    apple: "/assets/images/innovationhacklogo2026.png",
+  },
   openGraph: {
     title: "Innovation Hacks 2026",
     description: "Innovation Hacks 2026 - ASU's Premier Student-Led Hackathon by The AI Society, GDG ASU, and SoDA",
