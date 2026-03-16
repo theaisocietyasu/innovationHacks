@@ -92,9 +92,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       const bucket = new GridFSBucket(mongoose.connection.db!, { bucketName: 'resumes' });
       const buffer = Buffer.from(await resumeFile.arrayBuffer());
       const fileId = new mongoose.Types.ObjectId();
+      const uuidFileName = `${crypto.randomUUID()}.pdf`;
 
       await new Promise<void>((resolve, reject) => {
-        const uploadStream = bucket.openUploadStreamWithId(fileId, resumeFile.name, {
+        const uploadStream = bucket.openUploadStreamWithId(fileId, uuidFileName, {
           metadata: { contentType: 'application/pdf' },
         });
         uploadStream.end(buffer);
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       });
 
       resumeUrl = `/api/resume/${fileId.toString()}`;
-      resumeFileName = resumeFile.name;
+      resumeFileName = uuidFileName;
     }
 
     if (!resumeUrl) {
