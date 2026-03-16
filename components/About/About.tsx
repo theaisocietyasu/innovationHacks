@@ -59,8 +59,8 @@ const About = () => {
             margin: "0 auto 28px",
           }}
         >
-          36 hours of building, competing for $10K+ in prizes at ASU.
-          Free food, mentors, and workshops — all skill levels welcome.
+          48 hours of building, competing for $10K+ in prizes at ASU.
+          Free food, mentors, and workshops. All skill levels welcome.
         </p>
 
         {/* Single-pill stat bar */}
@@ -87,7 +87,7 @@ const About = () => {
                 lineHeight: 1,
               }}
             >
-              <CountUp start={0} end={6} duration={3} enableScrollSpy />+
+              <CountUp start={0} end={5} duration={3} enableScrollSpy />+
             </p>
             <p
               style={{
@@ -115,7 +115,7 @@ const About = () => {
                 lineHeight: 1,
               }}
             >
-              <CountUp start={0} end={36} duration={3} enableScrollSpy />+
+              <CountUp start={0} end={48} duration={3} enableScrollSpy />+
             </p>
             <p
               style={{

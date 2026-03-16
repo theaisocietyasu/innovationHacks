@@ -300,7 +300,7 @@ export default function RegisterPage() {
                 <div className="org-logos-row">
                   <Image
                     src="/assets/images/clubs.png"
-                    alt="Organising clubs — The AI Society, GDG ASU, SoDA"
+                    alt="Organising clubs: The AI Society, GDG ASU, SoDA"
                     width={320}
                     height={60}
                     style={{ objectFit: "contain", maxWidth: "100%" }}
@@ -739,7 +739,7 @@ export default function RegisterPage() {
                       className={`register-dropzone${isDragActive ? " register-dropzone--active" : ""}`}
                       role="button"
                       tabIndex={0}
-                      aria-label="Upload resume (required) — click or drag and drop a PDF"
+                      aria-label="Upload resume (required). Click or drag and drop a PDF"
                     >
                       <input {...getInputProps()} />
                       {resumeFile ? (
