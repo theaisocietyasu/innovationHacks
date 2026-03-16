@@ -131,7 +131,7 @@ const OrgCard: React.FC<OrgCardProps> = ({ name, logoSrc, discordHref, instagram
 
 const Footer: React.FC = () => (
   <footer
-    className="mt-16"
+    className="mt-24"
     style={{
       background: "#0a0614",
     }}
