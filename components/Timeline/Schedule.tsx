@@ -41,7 +41,7 @@ const SCHEDULE: ScheduleEvent[] = [
 
 const TYPE_COLOR: Record<EventType, string> = {
   logistics:  "#60A5FA",
-  ceremony:   "#A78BFA",
+  ceremony:   "#F87171",
   hacking:    "#34D399",
   food:       "#FB923C",
   workshop:   "#38BDF8",
