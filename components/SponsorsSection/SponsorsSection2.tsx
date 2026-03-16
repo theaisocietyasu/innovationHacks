@@ -74,6 +74,7 @@ export default function SponsorsSection2() {
         src: "/sponsors_logos/amazon.svg",
         alt: "Amazon LOGO",
         link: "https://aws.amazon.com",
+        style: { display: "block", margin: "0 auto" },
       },
       {
         src: "/sponsors_logos/statefarmm.png",
@@ -146,7 +147,7 @@ export default function SponsorsSection2() {
     emerald: { imgSize: "w-48 h-16 sm:h-full sm:w-full" },
     diamond: { imgSize: "w-48 h-16 sm:h-full sm:w-full" },
     gold: {
-      imgSize: "h-[90px] w-[250px] px-2 py-1 md:h-[120px] md:w-[500px]",
+      imgSize: "h-[60px] w-[250px] px-2 py-1 md:h-[105px] md:w-[420px]",
     },
     sponsors: {
       imgSize: "h-[90px] w-[250px] px-2 py-1 md:h-[120px] md:w-[500px]",
