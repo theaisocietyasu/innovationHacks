@@ -189,7 +189,7 @@ const About = () => {
             }}
           >
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1533.942374807188!2d-111.93243103640856!3d33.41990739788714!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x872b08dc507ef7f9%3A0x9fd35bed67dbe087!2sEngineering%20Center%2C%20Tempe%2C%20AZ%2085281!5e0!3m2!1sen!2sus!4v1744646749016!5m2!1sen!2sus"
+              src="https://maps.google.com/maps?q=Engineering+Center+G,+E+Tyler+Mall,+Tempe,+AZ+85281&output=embed"
               width="100%"
               height="100%"
               style={{
