@@ -51,11 +51,11 @@ const schema = z.object({
     .refine(
       (val) => {
         const digits = val.replace(/\D/g, "");
-        return digits.length >= 7 && digits.length <= 15;
+        return digits.length === 10;
       },
-      { message: "Please enter a valid phone number (7–15 digits)" }
+      { message: "Phone number must be exactly 10 digits" }
     ),
-  age: z.coerce.number().int().min(13, "Must be 13+").max(99, "Must be 99 or under"),
+  age: z.coerce.number().int().min(16, "Must be 16+").max(99, "Must be 99 or under"),
   school: z.string().min(3, "School / University is required"),
   levelOfStudy: z.string().min(1, "Level of study is required"),
   yearOfStudy: z.string().optional(),
@@ -63,7 +63,7 @@ const schema = z.object({
   raceEthnicity: z.string().min(1, "Race/Ethnicity is required"),
   countryOfResidence: z.string().min(1, "Country is required"),
   linkedinUrl: z.string().optional(),
-  githubUrl: z.string().optional(),
+  githubUrl: z.string().min(1, "GitHub URL is required"),
   mlhCodeOfConduct: z.literal(true, {
     message: "You must agree to the MLH Code of Conduct",
   }),
@@ -403,12 +403,28 @@ export default function RegisterPage() {
                       <input
                         id="phone"
                         type="tel"
-                        inputMode="tel"
+                        inputMode="numeric"
                         className="register-input"
-                        placeholder="+1 555 000 0000"
+                        placeholder="e.g. 5550001234"
                         autoComplete="tel"
+                        maxLength={10}
                         aria-invalid={!!errors.phone}
                         aria-describedby={errors.phone ? "phone-error" : undefined}
+                        onKeyDown={(e) => {
+                          const allowed = [
+                            "Backspace", "Delete", "Tab",
+                            "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+                            "Home", "End",
+                          ];
+                          if (
+                            allowed.includes(e.key) ||
+                            ((e.ctrlKey || e.metaKey) && ["a", "c", "v", "x"].includes(e.key.toLowerCase()))
+                          ) return;
+                          if (!/^\d$/.test(e.key)) e.preventDefault();
+                        }}
+                        onInput={(e) => {
+                          e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "");
+                        }}
                         {...register("phone")}
                       />
                       {errors.phone && (
@@ -428,7 +444,7 @@ export default function RegisterPage() {
                         type="number"
                         className="register-input"
                         placeholder="e.g. 20"
-                        min={13}
+                        min={16}
                         max={99}
                         aria-invalid={!!errors.age}
                         aria-describedby={errors.age ? "age-error" : undefined}
@@ -679,7 +695,7 @@ export default function RegisterPage() {
                   {/* GitHub */}
                   <div className="mt-4">
                     <label htmlFor="githubUrl" className="register-label">
-                      GitHub URL <span style={{ color: "rgba(160,100,255,0.7)", fontSize: "0.8em", marginLeft: "4px" }}>(recommended)</span>
+                      GitHub URL <span style={{ color: "#ff6b6b" }}>*</span>
                     </label>
                     <input
                       id="githubUrl"

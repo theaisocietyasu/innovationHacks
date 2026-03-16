@@ -72,6 +72,12 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
           >
             FAQs
           </a>
+          <a
+            href="/register"
+            className="px-5 py-2 rounded-full bg-[#E066FF] text-white font-semibold hover:bg-[#c94fe0] transition-colors duration-300 text-sm"
+          >
+            Register
+          </a>
         </div>
         <div className="block md:hidden">
           <button
@@ -131,6 +137,13 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
                 onClick={() => setIsOpenMenu(false)}
               >
                 FAQs
+              </a>
+              <a
+                href="/register"
+                className="px-5 py-2 rounded-full bg-[#E066FF] text-white font-semibold hover:bg-[#c94fe0] transition-colors duration-300 text-sm"
+                onClick={() => setIsOpenMenu(false)}
+              >
+                Register
               </a>
             </div>
           </motion.div>
