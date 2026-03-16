@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import { motion, useAnimation, useInView } from "framer-motion";
+import { FaDiscord } from "react-icons/fa";
 import CountdownTimer from "./CountdownTimer";
 import Image from "next/image";
 
@@ -54,13 +55,25 @@ const Content: React.FC = () => {
       {/* Countdown */}
       <CountdownTimer />
 
-      {/* Register CTA */}
-      <a
-        href="/register"
-        className="hero-register-btn"
-      >
-        Register Now →
-      </a>
+      {/* CTA Buttons */}
+      <div className="glass-buttons-row">
+        <a
+          href="/register"
+          className="glass-button"
+        >
+          Register Now →
+        </a>
+        <a
+          href="https://discord.gg/7Eq2zmvYgQ"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="glass-button glass-button--discord"
+          aria-label="Join our Discord server"
+        >
+          <FaDiscord aria-hidden="true" style={{ fontSize: "1.15rem", flexShrink: 0 }} />
+          Join Discord
+        </a>
+      </div>
     </motion.div>
   );
 };

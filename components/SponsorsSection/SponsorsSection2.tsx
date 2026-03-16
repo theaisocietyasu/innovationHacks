@@ -117,7 +117,7 @@ export default function SponsorsSection2() {
       {
         src: "/assets/images/gdsc.svg",
         alt: "GDG ASU Logo",
-        link: "https://students.engineering.asu.edu/clubs/gdsc/",
+        link: "https://www.asudsc.com/",
         style: { width: "80px", height: "80px" },
       },
       {
