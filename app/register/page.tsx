@@ -45,7 +45,13 @@ const LEVEL_OF_STUDY_OPTIONS = [
 const schema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Valid email required"),
+  email: z.string().email("Valid email required").refine(
+    (val) => {
+      const domain = val.split("@")[1]?.toLowerCase() ?? "";
+      return domain === "gmail.com" || domain.endsWith(".edu");
+    },
+    { message: "Please use your school (.edu) or Gmail email address." }
+  ),
   phone: z.string()
     .min(1, "Phone number is required")
     .refine(
@@ -62,8 +68,14 @@ const schema = z.object({
   gender: z.string().min(1, "Gender is required"),
   raceEthnicity: z.string().min(1, "Race/Ethnicity is required"),
   countryOfResidence: z.string().min(1, "Country is required"),
-  linkedinUrl: z.string().optional(),
-  githubUrl: z.string().min(1, "GitHub URL is required"),
+  linkedinUrl: z.string().optional().refine(
+    (val) => !val || /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]{3,100}\/?(\?[^\s]*)?$/.test(val),
+    { message: "Please enter a valid LinkedIn profile URL (e.g. linkedin.com/in/yourname)" }
+  ),
+  githubUrl: z.string().min(1, "GitHub URL is required").regex(
+    /^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9]([a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?\/?$/,
+    "Please enter a valid GitHub profile URL (e.g. github.com/yourusername)"
+  ),
   mlhCodeOfConduct: z.literal(true, {
     message: "You must agree to the MLH Code of Conduct",
   }),
@@ -100,6 +112,8 @@ export default function RegisterPage() {
     // which conflicts with hookform's resolver typing. The resolver correctly
     // coerces the select string to number at runtime.
     resolver: zodResolver(schema) as Resolver<FormData>,
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       school: "",
       mlhEmailConsent: false,
@@ -336,7 +350,7 @@ export default function RegisterPage() {
                         id="firstName"
                         type="text"
                         className="register-input"
-                        placeholder="Ada"
+                        placeholder="John"
                         autoComplete="given-name"
                         aria-invalid={!!errors.firstName}
                         aria-describedby={errors.firstName ? "firstName-error" : undefined}
@@ -358,7 +372,7 @@ export default function RegisterPage() {
                         id="lastName"
                         type="text"
                         className="register-input"
-                        placeholder="Lovelace"
+                        placeholder="Doe"
                         autoComplete="family-name"
                         aria-invalid={!!errors.lastName}
                         aria-describedby={errors.lastName ? "lastName-error" : undefined}
