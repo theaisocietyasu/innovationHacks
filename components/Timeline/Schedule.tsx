@@ -55,18 +55,6 @@ const DAY_LABELS: Record<1 | 2 | 3, string> = {
   3: "Day 3 · Sun Apr 5",
 };
 
-const DAY_FULL_LABELS: Record<1 | 2 | 3, string> = {
-  1: "Friday, April 3",
-  2: "Saturday, April 4",
-  3: "Sunday, April 5",
-};
-
-const DAY_COLORS: Record<1 | 2 | 3, string> = {
-  1: "#E066FF",
-  2: "#41CDDF",
-  3: "#FE893E",
-};
-
 // ─── Liquid-glass tab toggle ──────────────────────────────────────────────────
 
 interface DayToggleProps {
@@ -174,7 +162,7 @@ function MobileSchedule({ selectedDay, onSelectDay }: MobileScheduleProps) {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 14,
+            gap: 16,
             maxWidth: 480,
             margin: "0 auto",
           }}
@@ -190,51 +178,56 @@ function MobileSchedule({ selectedDay, onSelectDay }: MobileScheduleProps) {
                 transition={{ duration: 0.45, delay: i * 0.06 }}
                 style={{
                   background: "rgba(15,10,30,0.65)",
-                  backdropFilter: "blur(14px) saturate(160%)",
-                  borderLeft: `3px solid ${color}`,
-                  borderRadius: 12,
-                  padding: "16px 20px",
-                  display: "flex",
-                  gap: 12,
-                  alignItems: "flex-start",
+                  backdropFilter: "blur(14px)",
+                  WebkitBackdropFilter: "blur(14px)",
+                  borderRadius: 10,
+                  overflow: "hidden",
+                  border: "1px solid rgba(255,255,255,0.08)",
                 }}
               >
-                <div>
-                  <span
-                    style={{
-                      fontFamily: "monospace",
-                      fontSize: "0.7rem",
-                      color,
-                      fontWeight: 700,
-                      display: "block",
-                      marginBottom: 4,
-                    }}
-                  >
-                    {event.time}
-                  </span>
-                  <p style={{ color: "white", fontWeight: 700, fontSize: "0.95rem", margin: "0 0 3px" }}>
+                {/* Top stripe */}
+                <div style={{ height: 4, background: color, width: "100%" }} />
+
+                {/* Inner content */}
+                <div style={{ padding: "18px 22px" }}>
+                  {/* Time + badge row */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <span
+                      style={{
+                        fontFamily: "monospace",
+                        fontSize: "0.78rem",
+                        color,
+                        fontWeight: 700,
+                      }}
+                    >
+                      {event.time}
+                    </span>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        padding: "3px 10px",
+                        background: `${color}18`,
+                        border: `1px solid ${color}44`,
+                        borderRadius: 999,
+                        color,
+                        fontSize: "0.6rem",
+                        fontWeight: 700,
+                        textTransform: "uppercase" as const,
+                        letterSpacing: "0.12em",
+                        fontFamily: "monospace",
+                        whiteSpace: "nowrap",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {event.type}
+                    </span>
+                  </div>
+                  <p style={{ color: "white", fontWeight: 700, fontSize: "1.08rem", margin: "6px 0 0" }}>
                     {event.title}
                   </p>
-                  <p style={{ color: "rgba(148,163,184,0.85)", fontSize: "0.78rem", margin: "0 0 8px" }}>
+                  <p style={{ color: "rgba(148,163,184,0.8)", fontSize: "0.88rem", margin: "4px 0 0", lineHeight: 1.5 }}>
                     {event.description}
                   </p>
-                  <span
-                    style={{
-                      display: "inline-block",
-                      padding: "2px 10px",
-                      background: `${color}18`,
-                      border: `1px solid ${color}44`,
-                      borderRadius: 999,
-                      color,
-                      fontSize: "0.6rem",
-                      fontWeight: 700,
-                      textTransform: "uppercase" as const,
-                      letterSpacing: "0.12em",
-                      fontFamily: "monospace",
-                    }}
-                  >
-                    {event.type}
-                  </span>
                 </div>
               </motion.div>
             );
@@ -247,27 +240,29 @@ function MobileSchedule({ selectedDay, onSelectDay }: MobileScheduleProps) {
 
 // ─── Desktop scroll card ──────────────────────────────────────────────────────
 
-interface WipeCardProps {
+interface ScrollCardProps {
   event: ScheduleEvent;
   index: number;
 }
 
-function ScrollCard({ event, index }: WipeCardProps) {
+function ScrollCard({ event, index }: ScrollCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
+  const stripeRef = useRef<HTMLDivElement>(null);
   const color = TYPE_COLOR[event.type];
 
   useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
     const card = cardRef.current;
-    const line = lineRef.current;
-    if (!card || !line) return;
+    const stripe = stripeRef.current;
+    if (!card || !stripe) return;
 
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        line,
-        { scaleY: 0, transformOrigin: "top center" },
+        stripe,
+        { scaleX: 0, transformOrigin: "left center" },
         {
-          scaleY: 1,
+          scaleX: 1,
           ease: "power2.inOut",
           scrollTrigger: {
             trigger: card,
@@ -277,7 +272,7 @@ function ScrollCard({ event, index }: WipeCardProps) {
           },
         }
       );
-    });
+    }, card);
 
     return () => ctx.revert();
   }, []);
@@ -290,105 +285,66 @@ function ScrollCard({ event, index }: WipeCardProps) {
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94], delay: (index % 5) * 0.06 }}
       style={{
-        position: "relative",
-        width: "100%",
-        height: 180,
-        marginBottom: 2,
-        overflow: "visible",
+        background: "rgba(15,10,30,0.65)",
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+        borderRadius: 10,
+        overflow: "hidden",
+        border: "1px solid rgba(255,255,255,0.08)",
       }}
     >
-      {/* Left accent line */}
+      {/* Colored top stripe */}
       <div
-        ref={lineRef}
+        ref={stripeRef}
         style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          width: 3,
-          height: "100%",
-          background: `linear-gradient(to bottom, ${color}, ${color}55)`,
-          borderRadius: 2,
-          transformOrigin: "top center",
-          transform: "scaleY(0)",
-          zIndex: 5,
+          height: 4,
+          background: color,
+          width: "100%",
+          transform: "scaleX(0)",
         }}
       />
 
-      {/* Card */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: "rgba(15,10,30,0.65)",
-          backdropFilter: "blur(14px) saturate(160%)",
-          WebkitBackdropFilter: "blur(14px) saturate(160%)",
-          borderLeft: `3px solid ${color}`,
-          display: "flex",
-          alignItems: "center",
-          gap: 20,
-          padding: "0 28px",
-        }}
-      >
-        {/* Left: colored dot */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, width: 48 }}>
-          <div
-            style={{
-              width: 12,
-              height: 12,
-              borderRadius: "50%",
-              background: color,
-              boxShadow: `0 0 8px ${color}88`,
-              flexShrink: 0,
-            }}
-          />
-        </div>
-
-        {/* Divider */}
-        <div style={{ width: 1, height: 80, background: `${color}33`, flexShrink: 0 }} />
-
-        {/* Content */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+      {/* Inner content */}
+      <div style={{ padding: "18px 22px" }}>
+        {/* Time + badge row */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <span
             style={{
               fontFamily: "monospace",
-              fontSize: "0.7rem",
+              fontSize: "0.78rem",
               color,
               fontWeight: 700,
-              display: "block",
-              marginBottom: 6,
-              letterSpacing: "0.08em",
             }}
           >
             {event.time}
           </span>
-          <p style={{ color: "white", fontWeight: 800, fontSize: "1.1rem", margin: "0 0 6px", lineHeight: 1.25 }}>
-            {event.title}
-          </p>
-          <p style={{ color: "rgba(148,163,184,0.8)", fontSize: "0.82rem", margin: 0, lineHeight: 1.55 }}>
-            {event.description}
-          </p>
-        </div>
-
-        {/* Type badge */}
-        <div style={{ flexShrink: 0 }}>
           <span
             style={{
               display: "inline-block",
-              padding: "4px 12px",
+              padding: "3px 10px",
               background: `${color}18`,
               border: `1px solid ${color}44`,
               borderRadius: 999,
               color,
-              fontSize: "0.65rem",
+              fontSize: "0.6rem",
               fontWeight: 700,
               textTransform: "uppercase" as const,
               letterSpacing: "0.12em",
               fontFamily: "monospace",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
             }}
           >
             {event.type}
           </span>
         </div>
+
+        <p style={{ color: "white", fontSize: "1.08rem", fontWeight: 700, margin: "6px 0 0" }}>
+          {event.title}
+        </p>
+        <p style={{ color: "rgba(148,163,184,0.8)", fontSize: "0.88rem", margin: "4px 0 0", lineHeight: 1.5 }}>
+          {event.description}
+        </p>
       </div>
     </motion.div>
   );
@@ -398,7 +354,6 @@ function ScrollCard({ event, index }: WipeCardProps) {
 
 export default function TimelineV10Schedule() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const spineRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedDay, setSelectedDay] = useState<1 | 2 | 3>(1);
 
@@ -409,35 +364,7 @@ export default function TimelineV10Schedule() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  useEffect(() => {
-    if (isMobile) return;
-
-    gsap.registerPlugin(ScrollTrigger);
-
-    const ctx = gsap.context(() => {
-      if (spineRef.current && sectionRef.current) {
-        gsap.fromTo(
-          spineRef.current,
-          { scaleY: 0, transformOrigin: "top center" },
-          {
-            scaleY: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 60%",
-              end: "bottom 40%",
-              scrub: 1,
-            },
-          }
-        );
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, [isMobile]);
-
   const dayEvents = SCHEDULE.filter((e) => e.day === selectedDay);
-  const dc = DAY_COLORS[selectedDay];
 
   return (
     <div
@@ -474,83 +401,6 @@ export default function TimelineV10Schedule() {
           {/* Day toggle */}
           <DayToggle selectedDay={selectedDay} onSelect={setSelectedDay} />
 
-          {/* Spine */}
-          <div
-            style={{
-              position: "absolute",
-              left: "2rem",
-              top: 0,
-              bottom: 0,
-              width: 3,
-              background: "rgba(224,102,255,0.08)",
-              borderRadius: 2,
-            }}
-          >
-            <div
-              ref={spineRef}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: "linear-gradient(to bottom, #7B61FF, #E066FF)",
-                borderRadius: 2,
-                boxShadow: "0 0 16px rgba(224,102,255,0.5)",
-                transformOrigin: "top center",
-              }}
-            />
-          </div>
-
-          {/* Day header */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 14,
-              paddingLeft: 20,
-              marginBottom: 8,
-            }}
-          >
-            <div
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
-                background: `${dc}18`,
-                border: `2px solid ${dc}55`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: dc,
-                fontWeight: 800,
-                fontSize: "0.85rem",
-                fontFamily: "monospace",
-                flexShrink: 0,
-              }}
-            >
-              {selectedDay}
-            </div>
-            <div>
-              <p
-                style={{
-                  color: dc,
-                  fontSize: "0.65rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  margin: 0,
-                  fontFamily: "monospace",
-                }}
-              >
-                Day {selectedDay}
-              </p>
-              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.8rem", margin: 0 }}>
-                {DAY_FULL_LABELS[selectedDay]}
-              </p>
-            </div>
-          </div>
-
           {/* Animated events list */}
           <AnimatePresence mode="wait">
             <motion.div
@@ -559,7 +409,7 @@ export default function TimelineV10Schedule() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.3 }}
-              style={{ paddingLeft: 20, display: "flex", flexDirection: "column", gap: 3 }}
+              style={{ display: "flex", flexDirection: "column", gap: 16 }}
             >
               {dayEvents.map((event) => {
                 const globalIndex = SCHEDULE.indexOf(event);
