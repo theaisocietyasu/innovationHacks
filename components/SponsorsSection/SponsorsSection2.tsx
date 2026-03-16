@@ -115,7 +115,7 @@ export default function SponsorsSection2() {
         style: { width: "80px", height: "80px" },
       },
       {
-        src: "/assets/images/gdsc.png",
+        src: "/assets/images/gdsc.svg",
         alt: "GDG ASU Logo",
         link: "https://students.engineering.asu.edu/clubs/gdsc/",
         style: { width: "80px", height: "80px" },
@@ -163,7 +163,7 @@ export default function SponsorsSection2() {
   };
 
   return (
-    <div className="pt-16 sm:mt-16">
+    <div className="pt-24 pb-24 sm:mt-24">
       {/* <h1 className="my-10 text-center text-white text-3xl sm:text-4xl md:text-4xl xl:text-5xl font-logo sponsorContainer1">
         Sponsors
       </h1> */}

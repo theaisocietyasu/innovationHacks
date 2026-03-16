@@ -105,7 +105,7 @@ const HacksFaq = [
 
 export default function FAQ() {
   return (
-    <div className="mt-20 w-full items-center justify-center flex flex-col gap-12  p-10 ">
+    <div className="mt-24 pb-24 w-full items-center justify-center flex flex-col gap-12 px-10 pt-0">
       <div className="text-center   flex flex-col">
         <div className="my-8 text-white text-xl sm:text-2xl md:text-4xl">
           <h2 className="text-2xl text-center font-bold md:text-3xl lg:text-4xl font-logo faq-title">

@@ -35,13 +35,13 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
     <div className="navbar  py-4 px-8  fixed top-0 left-0 right-0 z-20 bg-gradient-to-b from-[#171721] from-40% ">
       <div className="container mx-auto flex items-center justify-between pr-28">
         <div className="logo">
-          <a href="#hero" className="text-white text-2xl font-bold">
+          <a href="/" className="text-white text-2xl font-bold">
             Innovation Hacks
           </a>
         </div>
         <div className="hidden md:flex items-center space-x-12">
           <a
-            href="#about"
+            href="/#about"
             className={`text-white hover:text-[#E066FF] transition-colors duration-300 ${
               activeSection === "about" ? "text-[#E066FF]" : ""
             }`}
@@ -49,7 +49,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
             About
           </a>
           <a
-            href="#schedule"
+            href="/#schedule"
             className={`text-white hover:text-[#E066FF] transition-colors duration-300 ${
               activeSection === "schedule" ? "text-[#E066FF]" : ""
             }`}
@@ -57,7 +57,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
             Schedule
           </a>
           <a
-            href="#sponsors"
+            href="/#sponsors"
             className={`text-white hover:text-[#E066FF] transition-colors duration-300 ${
               activeSection === "sponsors" ? "text-[#E066FF]" : ""
             }`}
@@ -65,7 +65,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
             Sponsors
           </a>
           <a
-            href="#faq"
+            href="/#faq"
             className={`text-white hover:text-[#E066FF] transition-colors duration-300 ${
               activeSection === "faq" ? "text-[#E066FF]" : ""
             }`}
@@ -74,7 +74,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
           </a>
           <a
             href="/register"
-            className="px-5 py-2 rounded-full bg-[#E066FF] text-white font-semibold hover:bg-[#c94fe0] transition-colors duration-300 text-sm"
+            className="hero-register-btn !text-sm !px-5 !py-2 !mt-0"
           >
             Register
           </a>
@@ -103,7 +103,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
           >
             <div className="flex flex-col space-y-4 items-center">
               <a
-                href="#about"
+                href="/#about"
                 className={`text-white hover:text-[#E066FF] transition-colors duration-300 ${
                   activeSection === "about" ? "text-[#E066FF]" : ""
                 }`}
@@ -112,7 +112,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
                 About
               </a>
               <a
-                href="#schedule"
+                href="/#schedule"
                 className={`text-white hover:text-[#E066FF] transition-colors duration-300 ${
                   activeSection === "schedule" ? "text-[#E066FF]" : ""
                 }`}
@@ -121,7 +121,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
                 Schedule
               </a>
               <a
-                href="#sponsors"
+                href="/#sponsors"
                 className={`text-white hover:text-[#E066FF] transition-colors duration-300 ${
                   activeSection === "sponsors" ? "text-[#E066FF]" : ""
                 }`}
@@ -130,7 +130,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
                 Sponsors
               </a>
               <a
-                href="#faq"
+                href="/#faq"
                 className={`text-white hover:text-[#E066FF] transition-colors duration-300 ${
                   activeSection === "faq" ? "text-[#E066FF]" : ""
                 }`}
@@ -140,7 +140,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
               </a>
               <a
                 href="/register"
-                className="px-5 py-2 rounded-full bg-[#E066FF] text-white font-semibold hover:bg-[#c94fe0] transition-colors duration-300 text-sm"
+                className="hero-register-btn !text-sm !px-5 !py-2 !mt-0"
                 onClick={() => setIsOpenMenu(false)}
               >
                 Register

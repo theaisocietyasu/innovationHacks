@@ -108,7 +108,7 @@ const RSVPForm = () => {
   };
 
   return (
-    <section id="rsvp" className="w-full py-16 flex flex-col items-center">
+    <section id="rsvp" className="w-full py-24 flex flex-col items-center">
       {/* Purple gradient in background */}
       <div className="absolute left-0 top-1/4 w-[300px] h-[300px] bg-purple-600/20 rounded-full filter blur-[100px] -z-10"></div>
       <div className="absolute right-0 bottom-1/4 w-[300px] h-[300px] bg-indigo-600/20 rounded-full filter blur-[100px] -z-10"></div>
