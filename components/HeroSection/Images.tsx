@@ -56,7 +56,7 @@ function Images({ ease }: any) {
           animate={box1Controls}
         >
           <img
-            src="/assets/images/gdsc.png"
+            src="/assets/images/gdsc.svg"
             alt="Alt"
             className="bg-white border-2 border-solid border-red-500 rounded w-40 h-24"
           />
@@ -67,7 +67,7 @@ function Images({ ease }: any) {
           animate={box2Controls}
         >
           <img
-            src="/assets/images/gdsc.png"
+            src="/assets/images/gdsc.svg"
             alt="Alt"
             className="bg-white rounded"
           />
@@ -81,7 +81,7 @@ function Images({ ease }: any) {
           animate={box3Controls}
         >
           <img
-            src="/assets/images/gdsc.png"
+            src="/assets/images/gdsc.svg"
             alt="Alt"
             className="bg-white border-2 border-solid border-yellow-500 rounded w-64 h-28"
           />

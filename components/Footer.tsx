@@ -150,7 +150,7 @@ const Footer: React.FC = () => (
         />
         <OrgCard
           name="GDG ASU"
-          logoSrc="/assets/images/gdsc.png"
+          logoSrc="/assets/images/gdsc.svg"
           logoWidth={48}
           logoHeight={48}
           discordHref={SOCIALS.gdsc_discord}
