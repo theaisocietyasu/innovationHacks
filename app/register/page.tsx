@@ -236,7 +236,7 @@ export default function RegisterPage() {
           position: "fixed",
           inset: 0,
           zIndex: -1,
-          backgroundImage: "url('/assets/images/glassmorphbg.jpg')",
+          backgroundImage: "url('/assets/images/newbg.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
