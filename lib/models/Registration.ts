@@ -27,7 +27,7 @@ const RegistrationSchema = new Schema<IRegistration>({
   lastName: { type: String, required: true, trim: true },
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   phone: { type: String, required: true, trim: true },
-  age: { type: Number, required: true, min: 13, max: 99 },
+  age: { type: Number, required: true, min: 16, max: 99 },
   school: { type: String, required: true, trim: true },
   levelOfStudy: {
     type: String,
@@ -50,7 +50,7 @@ const RegistrationSchema = new Schema<IRegistration>({
   gender: { type: String, required: true, trim: true },
   raceEthnicity: { type: String, required: true, trim: true },
   countryOfResidence: { type: String, required: true, trim: true },
-  linkedinUrl: { type: String, required: true, trim: true },
+  linkedinUrl: { type: String, required: false, trim: true },
   githubUrl: { type: String, required: true, trim: true },
   resumeUrl: { type: String, trim: true, required: true },
   resumeFileName: { type: String, trim: true, required: true },

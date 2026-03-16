@@ -2,20 +2,23 @@ export const runtime = 'nodejs';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { put } from '@vercel/blob';
+import mongoose from 'mongoose';
+import { GridFSBucket } from 'mongodb';
 import { connectToDatabase } from '@/lib/mongodb';
 import Registration from '@/lib/models/Registration';
 
 const LEVEL_OF_STUDY_VALUES = [
-  'High School',
-  '1st Year (Freshman)',
-  '2nd Year (Sophomore)',
-  '3rd Year (Junior)',
-  '4th Year (Senior)',
-  '5th Year+',
-  'Graduate Student',
-  'Bootcamp / Non-traditional',
-  'Other / Not a student',
+  'Less than Secondary / High School',
+  'Secondary / High School',
+  'Undergraduate University (2 year - community college or similar)',
+  'Undergraduate University (3+ year)',
+  'Graduate University (Masters, Professional, Doctoral, etc)',
+  'Code School / Bootcamp',
+  'Other Vocational / Trade Program or Apprenticeship',
+  'Post Doctorate',
+  'Other',
+  "I'm not currently a student",
+  'Prefer not to answer',
 ] as const;
 
 // HTML checkboxes submit 'on'/'off' or 'true'/'false' as strings — coerce to boolean.
@@ -29,14 +32,17 @@ const RegistrationSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('A valid email is required'),
-  phone: z.string().min(7, 'Phone number must be at least 7 characters'),
-  age: z.coerce.number().int().min(13, 'Must be at least 13').max(99, 'Must be 99 or younger'),
+  phone: z.string().refine(
+    (val) => val.replace(/\D/g, '').length === 10,
+    { message: 'Phone number must be exactly 10 digits' }
+  ),
+  age: z.coerce.number().int().min(16, 'Must be at least 16').max(99, 'Must be 99 or younger'),
   school: z.string().min(1, 'School is required'),
   levelOfStudy: z.enum(LEVEL_OF_STUDY_VALUES),
   gender: z.string().min(1, 'Gender is required'),
   raceEthnicity: z.string().min(1, 'Race/Ethnicity is required'),
   countryOfResidence: z.string().min(1, 'Country of residence is required'),
-  linkedinUrl: z.string().min(1, 'LinkedIn URL is required'),
+  linkedinUrl: z.string().optional(),
   githubUrl: z.string().min(1, 'GitHub URL is required'),
   mlhCodeOfConduct: literalTruePreprocess(),
   mlhDataSharing: literalTruePreprocess(),
@@ -81,8 +87,22 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         );
       }
 
-      const blob = await put(resumeFile.name, resumeFile, { access: 'public' });
-      resumeUrl = blob.url;
+      // Upload to MongoDB GridFS
+      await connectToDatabase();
+      const bucket = new GridFSBucket(mongoose.connection.db!, { bucketName: 'resumes' });
+      const buffer = Buffer.from(await resumeFile.arrayBuffer());
+      const fileId = new mongoose.Types.ObjectId();
+
+      await new Promise<void>((resolve, reject) => {
+        const uploadStream = bucket.openUploadStreamWithId(fileId, resumeFile.name, {
+          metadata: { contentType: 'application/pdf' },
+        });
+        uploadStream.end(buffer);
+        uploadStream.on('finish', resolve);
+        uploadStream.on('error', reject);
+      });
+
+      resumeUrl = `/api/resume/${fileId.toString()}`;
       resumeFileName = resumeFile.name;
     }
 
