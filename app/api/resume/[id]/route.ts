@@ -27,6 +27,9 @@ export async function GET(
     await connectToDatabase();
 
     const { id } = await params;
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'File not found' }, { status: 404 });
+    }
     const fileId = new ObjectId(id);
     const bucket = new GridFSBucket(mongoose.connection.db!, { bucketName: 'resumes' });
 

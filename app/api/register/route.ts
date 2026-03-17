@@ -6,40 +6,30 @@ import mongoose from 'mongoose';
 import { GridFSBucket } from 'mongodb';
 import { connectToDatabase } from '@/lib/mongodb';
 import Registration from '@/lib/models/Registration';
+import RateLimit from '@/lib/models/RateLimit';
 
 // ── Rate limiting ─────────────────────────────────────────────────────────────
-// Simple in-memory store — appropriate for a single-instance Vercel deployment.
-// Each entry tracks attempt count and the timestamp when the window resets.
+// Distributed rate limiting via MongoDB — works correctly across all serverless
+// instances. Uses a TTL index for automatic cleanup of expired windows.
+// The findOneAndUpdate with $inc is atomic — no race condition between read and write.
 
-interface RateLimitEntry {
-  count: number;
-  resetAt: number;
-}
-
-const rateLimitStore = new Map<string, RateLimitEntry>();
 const RATE_LIMIT_MAX = 5;
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
+async function checkRateLimit(ip: string): Promise<boolean> {
+  const now = new Date();
+  const resetAt = new Date(now.getTime() + RATE_LIMIT_WINDOW_MS);
 
-  // Purge expired entries on every call to prevent unbounded memory growth.
-  // Using forEach instead of for...of to stay compatible with tsconfig target: es5.
-  rateLimitStore.forEach((entry, key) => {
-    if (now > entry.resetAt) rateLimitStore.delete(key);
-  });
+  // Atomically increment the counter for the active window.
+  // If no document exists for this IP (or the window has expired and been cleaned up),
+  // upsert a fresh one with count=1 and a new resetAt.
+  const entry = await RateLimit.findOneAndUpdate(
+    { ip, resetAt: { $gt: now } },
+    { $inc: { count: 1 }, $setOnInsert: { resetAt } },
+    { upsert: true, new: true },
+  );
 
-  const entry = rateLimitStore.get(ip);
-
-  if (!entry || now > entry.resetAt) {
-    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-
-  if (entry.count >= RATE_LIMIT_MAX) return false;
-
-  entry.count += 1;
-  return true;
+  return entry.count <= RATE_LIMIT_MAX;
 }
 
 // ── Validation schema ─────────────────────────────────────────────────────────
@@ -115,16 +105,23 @@ const RegistrationSchema = z.object({
 const MAX_RESUME_SIZE = 5 * 1024 * 1024; // 5 MB
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  // ── Rate limit check ────────────────────────────────────────────────────────
-  const ip =
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  // Connect early — rate limit check requires DB access.
+  await connectToDatabase();
 
-  if (!checkRateLimit(ip)) {
+  // ── Rate limit check ────────────────────────────────────────────────────────
+  // Prefer x-real-ip (set by Vercel's edge to the actual client IP).
+  // x-forwarded-for is client-controllable on Vercel — do not use it for auth decisions.
+  const ip =
+    request.headers.get('x-real-ip')?.trim() ??
+    request.headers.get('x-forwarded-for')?.split(',').at(-1)?.trim() ??
+    'unknown';
+
+  if (!(await checkRateLimit(ip))) {
     return NextResponse.json(
       {
         error: {
           code: 'RATE_LIMITED',
-          message: 'Too many registration attempts. Please try again later.',
+          message: 'We\'re sorry, you\'ve made too many attempts. Please try again later.',
         },
       },
       { status: 429 },
@@ -198,8 +195,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const data = parsed.data;
 
     // ── Step 3: Duplicate email check ────────────────────────────────────────
-    await connectToDatabase();
-
     const existing = await Registration.findOne({ email: data.email });
     if (existing) {
       return NextResponse.json(
