@@ -38,7 +38,7 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
       // Connection pool settings. minPoolSize keeps a small number of warm
       // connections ready; maxPoolSize caps total concurrent connections per
       // serverless instance. These are per-instance limits, not cluster-wide.
-      minPoolSize: 2,
+      minPoolSize: 0,
       maxPoolSize: 10,
 
       // Fail quickly if no server is reachable within this window (ms).
