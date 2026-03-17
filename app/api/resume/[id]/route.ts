@@ -6,13 +6,31 @@ import { GridFSBucket, ObjectId } from 'mongodb';
 import { connectToDatabase } from '@/lib/mongodb';
 
 export async function GET(
-  _request: NextRequest,
-  { params }: { params: { id: string } },
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
+  // ── Access control ──────────────────────────────────────────────────────────
+  // This is an internal admin endpoint. Protect it with a shared secret token
+  // passed in the x-resume-token header. Fail secure — if the env var is not
+  // set, we still enforce the check and return 401 rather than exposing resumes.
+  const expectedToken = process.env.RESUME_ACCESS_TOKEN;
+  if (!expectedToken) {
+    console.warn('[GET /api/resume] RESUME_ACCESS_TOKEN is not set — all requests will be rejected.');
+  }
+
+  const providedToken = request.headers.get('x-resume-token');
+  if (!expectedToken || providedToken !== expectedToken) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     await connectToDatabase();
 
-    const fileId = new ObjectId(params.id);
+    const { id } = await params;
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'File not found' }, { status: 404 });
+    }
+    const fileId = new ObjectId(id);
     const bucket = new GridFSBucket(mongoose.connection.db!, { bucketName: 'resumes' });
 
     const files = await bucket.find({ _id: fileId }).toArray();

@@ -35,7 +35,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
     <div className="navbar  py-4 px-8  fixed top-0 left-0 right-0 z-20 bg-gradient-to-b from-[#171721] from-40% ">
       <div className="container mx-auto flex items-center justify-between pr-28">
         <div className="logo">
-          <a href="/" className="text-white text-2xl font-bold">
+          <a href="/" className="text-white text-base md:text-2xl font-bold">
             Innovation Hacks
           </a>
         </div>
@@ -99,7 +99,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="block md:hidden bg-black  bg-opacity-20 mt-8 py-4"
+            className="block md:hidden bg-[#171721] mt-8 py-4"
           >
             <div className="flex flex-col space-y-4 items-center">
               <a

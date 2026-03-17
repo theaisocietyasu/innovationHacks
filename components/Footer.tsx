@@ -4,6 +4,8 @@ import Image from "next/image";
 import { FaDiscord, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 
 const SOCIALS = {
+  // Innovation Hacks
+  ih_discord: "https://discord.gg/7Eq2zmvYgQ",
   // SoDA
   soda_instagram: "https://instagram.com/soda.asu",
   soda_discord:
@@ -188,6 +190,32 @@ const Footer: React.FC = () => (
           }
         >
           Contact Us
+        </a>
+
+        <div
+          style={{
+            width: "1px",
+            height: "12px",
+            background: "rgba(255, 255, 255, 0.15)",
+          }}
+        />
+
+        <a
+          href={SOCIALS.ih_discord}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 transition-colors duration-200"
+          aria-label="Join the Innovation Hacks Discord"
+          onMouseEnter={(e) =>
+            ((e.currentTarget as HTMLAnchorElement).style.color = "#E066FF")
+          }
+          onMouseLeave={(e) =>
+            ((e.currentTarget as HTMLAnchorElement).style.color =
+              "rgba(255, 255, 255, 0.45)")
+          }
+        >
+          <FaDiscord aria-hidden="true" style={{ fontSize: "1rem" }} />
+          Discord
         </a>
 
         <div

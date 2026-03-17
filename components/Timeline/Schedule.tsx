@@ -31,7 +31,7 @@ const SCHEDULE: ScheduleEvent[] = [
   { time: "9:00 PM MST", title: "Hacking Begins", description: "The clock starts. Build something incredible.", day: 1, date: "Friday, April 3", type: "hacking" },
   { time: "10:30 AM MST", title: "Morning & Breakfast", description: "First meal. Fuel up and keep building.", day: 2, date: "Saturday, April 4", type: "food" },
   { time: "1:30 PM MST", title: "Lunch", description: "Second meal. Take a break and push through the afternoon.", day: 2, date: "Saturday, April 4", type: "food" },
-  { time: "8:00 PM MST", title: "Dinner", description: "Third meal. Final stretch — projects due tomorrow.", day: 2, date: "Saturday, April 4", type: "food" },
+  { time: "8:00 PM MST", title: "Dinner", description: "Third meal. Final stretch, projects due tomorrow.", day: 2, date: "Saturday, April 4", type: "food" },
   { time: "10:30 AM MST", title: "Submission Deadline", description: "All projects must be submitted. Wrap up your code and demo.", day: 3, date: "Sunday, April 5", type: "logistics" },
   { time: "11:00 AM MST", title: "Judging Begins", description: "Judges visit each team. 3-minute demo and Q&A.", day: 3, date: "Sunday, April 5", type: "judging" },
   { time: "1:30 PM MST", title: "Finalist Presentations", description: "Top teams present to all judges and attendees.", day: 3, date: "Sunday, April 5", type: "ceremony" },
@@ -41,7 +41,7 @@ const SCHEDULE: ScheduleEvent[] = [
 
 const TYPE_COLOR: Record<EventType, string> = {
   logistics:  "#60A5FA",
-  ceremony:   "#A78BFA",
+  ceremony:   "#F87171",
   hacking:    "#34D399",
   food:       "#FB923C",
   workshop:   "#38BDF8",

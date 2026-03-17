@@ -9,10 +9,9 @@ const HacksFaq = [
     question: "Who can participate?",
     answer: (
       <>
-        Innovation Hacks 2026 is open to a diverse range of participants,
-        including students, developers, designers, and tech enthusiasts.
-        However, participants must be part of Arizona State University. Whether
-        you're a beginner or an experienced coder, there's a place for you here!
+        Innovation Hacks is open to all the students from Arizona State
+        University. Whether you&apos;re a complete beginner or an advanced
+        hacker, you all are invited to join!
       </>
     ),
   },
@@ -20,10 +19,10 @@ const HacksFaq = [
     question: "I've never been to a hackathon before. Should I participate?",
     answer: (
       <>
-        Congratulations on considering your first hackathon! Innovation Hacks
-        2025 is a perfect starting point. We welcome participants of all skill
-        levels and provide mentorship throughout the event. It's an excellent
-        opportunity to learn, collaborate, and create something amazing!
+        Hackathons are where magic happens: new friendships, new teams, and new
+        startups are born! It&apos;s an excellent opportunity to learn,
+        collaborate, and create something amazing! We welcome participants of
+        all skill levels!
       </>
     ),
   },
@@ -41,9 +40,10 @@ const HacksFaq = [
     question: "Do I need to know how to code?",
     answer: (
       <>
-        Yes, Innovation Hacks 2026 welcomes participants from diverse
-        backgrounds, including those new to coding. We encourage learning and
-        provide resources and mentorship to help you succeed!
+        No, you don&apos;t necessarily need to know how to code! A team
+        comprises designers, presenters, coders and people who bring the vibes
+        and motivation. So even if you don&apos;t know how to code, we believe
+        you will bring other skills, and will be matched with a team!
       </>
     ),
   },
@@ -62,8 +62,8 @@ const HacksFaq = [
     question: <>What should be the team size? </>,
     answer: (
       <>
-        The team size can range from a minimum of 2 participant to a maximum of
-        4 participants. 🤝
+        The team size can range from a minimum of 2 participants to a maximum
+        of 4 participants.
       </>
     ),
   },
@@ -89,11 +89,10 @@ const HacksFaq = [
     question: <>Have more questions? </>,
     answer: (
       <>
-        Feel free to write to us at help@innovationhacks.dev or create a
-        ticket🎫 on{" "}
+        Feel free to write to us at help@innovationhacks.dev or reach out on{" "}
         <a
           className="text-blue-400 underline"
-          href="https://discord.gg/the-software-developers-association-762811961238618122"
+          href="https://discord.gg/7Eq2zmvYgQ"
           target="_blank"
         >
           discord
