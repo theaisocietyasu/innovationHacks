@@ -233,7 +233,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       resumeUrl,
       resumeFileName: uuidFileName,
     });
-    await registration.save();
+
+    try {
+      await registration.save();
+    } catch (saveErr) {
+      // Clean up the uploaded resume so we don't leave an orphaned GridFS file.
+      await bucket.delete(fileId).catch((deleteErr) =>
+        console.error('[POST /api/register] Failed to delete orphaned resume after save failure:', deleteErr),
+      );
+      throw saveErr;
+    }
 
     return NextResponse.json(
       { success: true, message: 'Registration successful! See you at Innovation Hacks 2.0!' },
