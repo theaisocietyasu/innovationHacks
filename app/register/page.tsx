@@ -4,7 +4,6 @@ import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useDropzone, type FileRejection } from "react-dropzone";
-import toast, { Toaster } from "react-hot-toast";
 import Confetti from "react-confetti";
 import Image from "next/image";
 import Link from "next/link";
@@ -100,6 +99,7 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [confetti, setConfetti] = useState(false);
+  const [errorModal, setErrorModal] = useState<string | null>(null);
 
   const {
     register,
@@ -151,11 +151,17 @@ export default function RegisterPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!errorModal) return;
+    const timer = setTimeout(() => setErrorModal(null), 4000);
+    return () => clearTimeout(timer);
+  }, [errorModal]);
+
   // ── Dropzone ─────────────────────────────────────────────────────────────
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
     if (rejectedFiles.length > 0) {
-      toast.error("Please upload a PDF file only");
+      setErrorModal("Only PDF files are accepted.");
       return;
     }
     const file = acceptedFiles[0];
@@ -191,17 +197,46 @@ export default function RegisterPage() {
         method: "POST",
         body: formData,
       });
-      const json = (await res.json()) as { success?: boolean; message?: string };
 
-      if (res.ok && json.success) {
+      type ApiResponse =
+        | { success: true; message: string }
+        | { success: false; message: string }
+        | { error: { code: string; message: string; details?: { field: string; message: string }[] } };
+
+      const json = (await res.json()) as ApiResponse;
+
+      if (res.ok && "success" in json && json.success) {
         setSubmitted(true);
         setConfetti(true);
         setTimeout(() => setConfetti(false), 6000);
+        return;
+      }
+
+      if (res.status === 429) {
+        setErrorModal("Too many attempts. Please wait 15 minutes and try again.");
+        return;
+      }
+
+      if (res.status === 409) {
+        setErrorModal("You're already registered with this email.");
+        return;
+      }
+
+      if (res.status === 500) {
+        setErrorModal("Something went wrong on our end. Please try again later.");
+        return;
+      }
+
+      // 400 — extract the message from whichever shape the API returned
+      if ("error" in json) {
+        setErrorModal(json.error.message);
+      } else if ("message" in json && json.message) {
+        setErrorModal(json.message);
       } else {
-        toast.error(json.message ?? "Registration failed. Please try again.");
+        setErrorModal("Registration failed. Please try again.");
       }
     } catch {
-      toast.error("Network error. Please try again.");
+      setErrorModal("Network error. Please check your connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -211,25 +246,6 @@ export default function RegisterPage() {
 
   return (
     <>
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          style: {
-            background: "rgba(15, 10, 35, 0.95)",
-            color: "#ffffff",
-            border: "1px solid rgba(160, 100, 255, 0.3)",
-            backdropFilter: "blur(12px)",
-            fontSize: "0.9rem",
-          },
-          error: {
-            iconTheme: {
-              primary: "#ff6b6b",
-              secondary: "#ffffff",
-            },
-          },
-        }}
-      />
-
       {/* Fixed background — mirrors homepage */}
       <div
         id="page-bg"
@@ -904,6 +920,77 @@ export default function RegisterPage() {
           )}
         </div>
       </main>
+
+      {/* Error modal */}
+      {errorModal !== null && (
+        <>
+          {/* Backdrop */}
+          <div
+            onClick={() => setErrorModal(null)}
+            aria-hidden="true"
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.5)",
+              zIndex: 9998,
+            }}
+          />
+
+          {/* Modal */}
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="error-modal-message"
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              zIndex: 9999,
+              background: "rgba(15,10,35,0.97)",
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
+              border: "1px solid rgba(160,100,255,0.3)",
+              borderRadius: "16px",
+              padding: "32px 40px",
+              maxWidth: "380px",
+              width: "calc(100vw - 48px)",
+            }}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setErrorModal(null)}
+              aria-label="Close error"
+              style={{
+                position: "absolute",
+                top: "12px",
+                right: "16px",
+                background: "none",
+                border: "none",
+                fontSize: "1.2rem",
+                cursor: "pointer",
+                color: "rgba(255,255,255,0.6)",
+                lineHeight: 1,
+                padding: "4px",
+              }}
+            >
+              &#x2715;
+            </button>
+
+            <p
+              id="error-modal-message"
+              style={{
+                fontSize: "1.1rem",
+                color: "#ffffff",
+                textAlign: "center",
+                margin: 0,
+              }}
+            >
+              {errorModal}
+            </p>
+          </div>
+        </>
+      )}
     </>
   );
 }
