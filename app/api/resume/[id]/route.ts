@@ -45,11 +45,20 @@ export async function GET(
     // buffering the entire file in memory per request.
     const webStream = new ReadableStream({
       start(controller) {
-        downloadStream.on('data', (chunk: Buffer) => controller.enqueue(new Uint8Array(chunk)));
-        downloadStream.on('end', () => controller.close());
+        downloadStream.on('data', (chunk: Buffer) => {
+          if (downloadStream.destroyed) return;
+          controller.enqueue(new Uint8Array(chunk));
+        });
+        downloadStream.on('end', () => {
+          if (downloadStream.destroyed) return;
+          controller.close();
+        });
         downloadStream.on('error', (err: Error) => controller.error(err));
       },
       cancel() {
+        // Remove listeners BEFORE destroy — prevents _destroy() error events
+        // from racing into controller.enqueue/close after cancellation.
+        downloadStream.removeAllListeners();
         downloadStream.destroy();
       },
     });
