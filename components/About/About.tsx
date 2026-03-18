@@ -59,7 +59,7 @@ const About = () => {
             margin: "0 auto 28px",
           }}
         >
-          48 hours of building, competing for $10K+ in prizes at ASU.
+          Compete for $10,000+ in prizes at ASU&apos;s premier spring hackathon.
           Free food, mentors, and workshops. All skill levels welcome.
         </p>
 
