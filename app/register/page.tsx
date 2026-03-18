@@ -13,6 +13,7 @@ import "../../styles/hero.css";
 import "../../styles/register.css";
 import { countries } from "countries-list";
 import { MLH_SCHOOLS } from "@/lib/schools";
+import { IH_DISCORD_URL } from "@/lib/constants";
 
 // ── Static data ────────────────────────────────────────────────────────────
 
@@ -309,7 +310,7 @@ export default function RegisterPage() {
                     See you at Innovation Hacks 2.0, April 3–5, 2026 at ASU!
                   </p>
                   <a
-                    href="https://discord.gg/7Eq2zmvYgQ"
+                    href={IH_DISCORD_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hero-register-btn"

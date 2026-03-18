@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { GrMenu, GrClose } from "react-icons/gr";
 import Link from "next/link";
 import "@/styles/navbar.css";
+import { IH_DISCORD_URL } from "@/lib/constants";
 
 interface NavbarProps {
   activeSection: string;
@@ -74,7 +75,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
             FAQs
           </a>
           <a
-            href="https://discord.gg/7Eq2zmvYgQ"
+            href={IH_DISCORD_URL}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Join our Discord"
@@ -149,7 +150,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
                 FAQs
               </a>
               <a
-                href="https://discord.gg/7Eq2zmvYgQ"
+                href={IH_DISCORD_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Join our Discord"
