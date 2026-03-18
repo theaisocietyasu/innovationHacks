@@ -55,6 +55,7 @@ export async function GET(
         'Content-Type': (file.metadata?.['contentType'] as string | undefined) ?? 'application/pdf',
         'Content-Disposition': `inline; filename="${file.filename}"`,
         'Content-Length': buffer.length.toString(),
+        'Cache-Control': 'private, no-store',
       },
     });
   } catch (err) {
