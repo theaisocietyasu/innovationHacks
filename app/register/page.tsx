@@ -127,6 +127,8 @@ export default function RegisterPage() {
   const [showSchoolDropdown, setShowSchoolDropdown] = useState(false);
   const [filteredSchools, setFilteredSchools] = useState<string[]>([]);
   const schoolRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (schoolQuery.length >= 3) {
@@ -155,6 +157,15 @@ export default function RegisterPage() {
     if (!errorModal) return;
     const timer = setTimeout(() => setErrorModal(null), 4000);
     return () => clearTimeout(timer);
+  }, [errorModal]);
+
+  useEffect(() => {
+    if (errorModal !== null) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
+      closeButtonRef.current?.focus();
+    } else {
+      previousFocusRef.current?.focus();
+    }
   }, [errorModal]);
 
   // ── Dropzone ─────────────────────────────────────────────────────────────
@@ -941,6 +952,7 @@ export default function RegisterPage() {
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="error-modal-message"
+            onKeyDown={(e) => { if (e.key === 'Escape') setErrorModal(null); }}
             style={{
               position: "fixed",
               top: "50%",
@@ -959,6 +971,7 @@ export default function RegisterPage() {
           >
             {/* Close button */}
             <button
+              ref={closeButtonRef}
               onClick={() => setErrorModal(null)}
               aria-label="Close error"
               style={{
