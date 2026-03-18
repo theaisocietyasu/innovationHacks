@@ -12,7 +12,7 @@ export interface IRegistration extends Document {
   gender: string;
   raceEthnicity: string;
   countryOfResidence: string;
-  linkedinUrl: string;
+  linkedinUrl?: string;
   githubUrl: string;
   resumeUrl: string;
   resumeFileName: string;

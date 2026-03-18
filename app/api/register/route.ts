@@ -136,7 +136,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     if (!(resumeFile instanceof File) || resumeFile.size === 0) {
       return NextResponse.json(
-        { success: false, message: 'Resume is required. Please upload a PDF.' },
+        { error: { code: 'VALIDATION_FAILED', message: 'Resume is required. Please upload a PDF.' } },
         { status: 400 },
       );
     }
@@ -251,7 +251,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   } catch (err) {
     console.error('[POST /api/register] Unhandled error:', err);
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred.' } },
       { status: 500 },
     );
   }
