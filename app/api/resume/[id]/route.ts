@@ -49,6 +49,9 @@ export async function GET(
         downloadStream.on('end', () => controller.close());
         downloadStream.on('error', (err: Error) => controller.error(err));
       },
+      cancel() {
+        downloadStream.destroy();
+      },
     });
 
     return new NextResponse(webStream, {

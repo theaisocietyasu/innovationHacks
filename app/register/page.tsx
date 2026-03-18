@@ -953,7 +953,10 @@ export default function RegisterPage() {
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="error-modal-message"
-            onKeyDown={(e) => { if (e.key === 'Escape') setErrorModal(null); }}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') { setErrorModal(null); }
+              if (e.key === 'Tab') { e.preventDefault(); closeButtonRef.current?.focus(); }
+            }}
             style={{
               position: "fixed",
               top: "50%",
