@@ -5,7 +5,6 @@ import { FaDiscord } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { GrMenu, GrClose } from "react-icons/gr";
 import "@/styles/navbar.css";
-import Image from "next/image";
 
 interface NavbarProps {
   activeSection: string;
@@ -34,7 +33,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
 
   return (
     <div className="navbar  py-4 px-8  fixed top-0 left-0 right-0 z-20 bg-gradient-to-b from-[#171721] from-40% ">
-      <div className="container mx-auto flex items-center justify-between pr-28">
+      <div className="container mx-auto flex items-center justify-between">
         <div className="logo">
           <a href="/" className="text-white text-base md:text-2xl font-bold">
             Innovation Hacks
