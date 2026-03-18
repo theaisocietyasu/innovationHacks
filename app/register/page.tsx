@@ -8,6 +8,7 @@ import toast, { Toaster } from "react-hot-toast";
 import Confetti from "react-confetti";
 import Image from "next/image";
 import Link from "next/link";
+import { FaDiscord } from "react-icons/fa";
 import Navbar from "@/components/Navbar";
 import "../../styles/hero.css";
 import "../../styles/register.css";
@@ -280,10 +281,20 @@ export default function RegisterPage() {
                   >
                     See you at Innovation Hacks 2.0, April 3–5, 2026 at ASU!
                   </p>
+                  <a
+                    href="https://discord.gg/7Eq2zmvYgQ"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hero-register-btn"
+                    style={{ width: "auto", padding: "16px 40px", fontSize: "1.2rem", display: "inline-flex", alignItems: "center", gap: "10px", background: "rgba(88,101,242,0.25)", borderColor: "rgba(88,101,242,0.6)" }}
+                  >
+                    <FaDiscord style={{ fontSize: "1.3em" }} />
+                    Join our Discord
+                  </a>
                   <Link
                     href="/"
                     className="hero-register-btn"
-                    style={{ width: "auto", padding: "12px 28px" }}
+                    style={{ width: "auto", padding: "10px 24px", fontSize: "0.95rem", opacity: 0.65 }}
                   >
                     Back to homepage
                   </Link>

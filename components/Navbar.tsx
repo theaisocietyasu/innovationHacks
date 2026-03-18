@@ -1,6 +1,7 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
 import { BsArrowRight } from "react-icons/bs";
+import { FaDiscord } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { GrMenu, GrClose } from "react-icons/gr";
 import "@/styles/navbar.css";
@@ -73,6 +74,15 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
             FAQs
           </a>
           <a
+            href="https://discord.gg/7Eq2zmvYgQ"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Join our Discord"
+            className="text-white transition-opacity duration-200 hover:opacity-70"
+          >
+            <FaDiscord style={{ fontSize: "22px" }} />
+          </a>
+          <a
             href="/register"
             className="hero-register-btn !text-sm !px-5 !py-2 !mt-0"
           >
@@ -137,6 +147,17 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
                 onClick={() => setIsOpenMenu(false)}
               >
                 FAQs
+              </a>
+              <a
+                href="https://discord.gg/7Eq2zmvYgQ"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Join our Discord"
+                className="text-white transition-opacity duration-200 hover:opacity-70 flex items-center gap-2"
+                onClick={() => setIsOpenMenu(false)}
+              >
+                <FaDiscord style={{ fontSize: "20px" }} />
+                Discord
               </a>
               <a
                 href="/register"
