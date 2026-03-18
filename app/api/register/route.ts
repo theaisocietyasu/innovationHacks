@@ -102,7 +102,7 @@ const RegistrationSchema = z.object({
   mlhEmailConsent: booleanPreprocess(z.boolean()),
 });
 
-const MAX_RESUME_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_RESUME_SIZE = 4 * 1024 * 1024; // 4 MB — safe buffer below Vercel's ~4.5 MB request/body size limit for uploads
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   // Connect early — rate limit check requires DB access.
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     if (!(resumeFile instanceof File) || resumeFile.size === 0) {
       return NextResponse.json(
-        { success: false, message: 'Resume is required. Please upload a PDF.' },
+        { error: { code: 'VALIDATION_FAILED', message: 'Resume is required. Please upload a PDF.' } },
         { status: 400 },
       );
     }
@@ -159,8 +159,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         {
           error: {
             code: 'VALIDATION_FAILED',
-            message: 'Resume file must be 5 MB or smaller.',
-            details: [{ field: 'resumeFile', message: 'File size exceeds 5 MB limit.' }],
+            message: 'Resume file must be 4 MB or smaller.',
+            details: [{ field: 'resumeFile', message: 'File size exceeds 4 MB limit.' }],
           },
         },
         { status: 400 },
@@ -251,7 +251,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   } catch (err) {
     console.error('[POST /api/register] Unhandled error:', err);
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred.' } },
       { status: 500 },
     );
   }

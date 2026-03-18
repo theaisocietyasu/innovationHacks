@@ -122,7 +122,7 @@ export default function SponsorsSection2() {
         style: { width: "80px", height: "80px" },
       },
       {
-        src: "/assets/images/soda.png",
+        src: "/assets/images/soda.svg",
         alt: "SoDA LOGO",
         link: "https://thesoda.io/",
       },
@@ -181,36 +181,91 @@ export default function SponsorsSection2() {
               : category.charAt(0).toUpperCase() + category.slice(1) + " "}{" "}
           </h2>
 
-          <div className="flex flex-wrap justify-center md:px-20">
-            {sponsorList.map((sponsor, index) => (
-              <a
-                key={index}
-                href={sponsor.link ? sponsor.link : ""}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <div
-                  className={`m-4 glassy-div bg-cover bg-center flex items-center justify-center no-repeat rounded-2xl md:p-5 p-1 overflow-hidden hover-effect-${category} ${
-                    sponsor.link ? "cursor-pointer" : "cursor-default"
-                  } ${categorySizes[category]?.imgSize}`}
-                  onClick={
-                    sponsor.link
-                      ? () => {
+          {category === "event" ? (
+            <div className="max-w-[1516px] mx-auto">
+              <div className="flex flex-wrap justify-center md:px-20">
+                {sponsorList.map((sponsor, index) =>
+                  sponsor.link ? (
+                    <a
+                      key={index}
+                      href={sponsor.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <div
+                        className={`m-4 glassy-div bg-cover bg-center flex items-center justify-center no-repeat rounded-2xl md:p-5 p-1 overflow-hidden hover-effect-${category} cursor-pointer ${categorySizes[category]?.imgSize}`}
+                        onClick={() => {
                           handleClick(sponsor.link!);
-                        }
-                      : () => {}
-                  }
-                >
-                  <img
-                    alt=""
-                    src={`${sponsor.src}`}
-                    className="w-full h-full object-contain p-3"
-                    style={sponsor.style}
-                  />
-                </div>
-              </a>
-            ))}
-          </div>
+                        }}
+                      >
+                        <img
+                          alt={sponsor.alt}
+                          src={`${sponsor.src}`}
+                          className="w-full h-full object-contain p-3"
+                          style={sponsor.style}
+                        />
+                      </div>
+                    </a>
+                  ) : (
+                    <span key={index}>
+                      <div
+                        className={`m-4 glassy-div bg-cover bg-center flex items-center justify-center no-repeat rounded-2xl md:p-5 p-1 overflow-hidden hover-effect-${category} cursor-default ${categorySizes[category]?.imgSize}`}
+                        onClick={() => {}}
+                      >
+                        <img
+                          alt={sponsor.alt}
+                          src={`${sponsor.src}`}
+                          className="w-full h-full object-contain p-3"
+                          style={sponsor.style}
+                        />
+                      </div>
+                    </span>
+                  )
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-wrap justify-center md:px-20">
+              {sponsorList.map((sponsor, index) =>
+                sponsor.link ? (
+                  <a
+                    key={index}
+                    href={sponsor.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <div
+                      className={`m-4 glassy-div bg-cover bg-center flex items-center justify-center no-repeat rounded-2xl md:p-5 p-1 overflow-hidden hover-effect-${category} cursor-pointer ${categorySizes[category]?.imgSize}`}
+                      onClick={() => {
+                        handleClick(sponsor.link!);
+                      }}
+                    >
+                      <img
+                        alt={sponsor.alt}
+                        src={`${sponsor.src}`}
+                        className="w-full h-full object-contain p-3"
+                        style={sponsor.style}
+                      />
+                    </div>
+                  </a>
+                ) : (
+                  <span key={index}>
+                    <div
+                      className={`m-4 glassy-div bg-cover bg-center flex items-center justify-center no-repeat rounded-2xl md:p-5 p-1 overflow-hidden hover-effect-${category} cursor-default ${categorySizes[category]?.imgSize}`}
+                      onClick={() => {}}
+                    >
+                      <img
+                        alt={sponsor.alt}
+                        src={`${sponsor.src}`}
+                        className="w-full h-full object-contain p-3"
+                        style={sponsor.style}
+                      />
+                    </div>
+                  </span>
+                )
+              )}
+            </div>
+          )}
         </div>
       ))}
     </div>

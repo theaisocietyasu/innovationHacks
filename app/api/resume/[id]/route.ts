@@ -39,22 +39,35 @@ export async function GET(
     }
 
     const file = files[0];
-    const chunks: Buffer[] = [];
+    const downloadStream = bucket.openDownloadStream(fileId);
 
-    await new Promise<void>((resolve, reject) => {
-      const stream = bucket.openDownloadStream(fileId);
-      stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
-      stream.on('end', resolve);
-      stream.on('error', reject);
+    // Pipe the GridFS Node stream directly into a ReadableStream — avoids
+    // buffering the entire file in memory per request.
+    const webStream = new ReadableStream({
+      start(controller) {
+        downloadStream.on('data', (chunk: Buffer) => {
+          if (downloadStream.destroyed) return;
+          controller.enqueue(new Uint8Array(chunk));
+        });
+        downloadStream.on('end', () => {
+          if (downloadStream.destroyed) return;
+          controller.close();
+        });
+        downloadStream.on('error', (err: Error) => controller.error(err));
+      },
+      cancel() {
+        // Remove listeners BEFORE destroy — prevents _destroy() error events
+        // from racing into controller.enqueue/close after cancellation.
+        downloadStream.removeAllListeners();
+        downloadStream.destroy();
+      },
     });
 
-    const buffer = Buffer.concat(chunks);
-
-    return new NextResponse(buffer, {
+    return new NextResponse(webStream, {
       headers: {
         'Content-Type': (file.metadata?.['contentType'] as string | undefined) ?? 'application/pdf',
-        'Content-Disposition': `inline; filename="${file.filename}"`,
-        'Content-Length': buffer.length.toString(),
+        'Content-Disposition': `attachment; filename="${file.filename}"`,
+        'Cache-Control': 'private, no-store',
       },
     });
   } catch (err) {

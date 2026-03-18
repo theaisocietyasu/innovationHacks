@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Container } from "./Container";
 import "../../styles/faq/background.css";
 import "../../styles/faq.css";
+import { IH_DISCORD_URL } from "@/lib/constants";
 
 const HacksFaq = [
   {
@@ -92,7 +93,7 @@ const HacksFaq = [
         Feel free to write to us at help@innovationhacks.dev or reach out on{" "}
         <a
           className="text-blue-400 underline"
-          href="https://discord.gg/7Eq2zmvYgQ"
+          href={IH_DISCORD_URL}
           target="_blank"
         >
           discord

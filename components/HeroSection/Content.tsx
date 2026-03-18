@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { motion, useAnimation, useInView } from "framer-motion";
 import { FaDiscord } from "react-icons/fa";
 import CountdownTimer from "./CountdownTimer";
+import { IH_DISCORD_URL } from '@/lib/constants';
 import Image from "next/image";
 
 const Content: React.FC = () => {
@@ -64,7 +65,7 @@ const Content: React.FC = () => {
           Register Now →
         </a>
         <a
-          href="https://discord.gg/7Eq2zmvYgQ"
+          href={IH_DISCORD_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="glass-button glass-button--discord"

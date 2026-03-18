@@ -2,10 +2,11 @@
 import React from "react";
 import Image from "next/image";
 import { FaDiscord, FaInstagram, FaLinkedinIn } from "react-icons/fa";
+import { IH_DISCORD_URL } from "@/lib/constants";
 
 const SOCIALS = {
   // Innovation Hacks
-  ih_discord: "https://discord.gg/7Eq2zmvYgQ",
+  ih_discord: IH_DISCORD_URL,
   // SoDA
   soda_instagram: "https://instagram.com/soda.asu",
   soda_discord:
@@ -160,7 +161,7 @@ const Footer: React.FC = () => (
         />
         <OrgCard
           name="SoDA"
-          logoSrc="/assets/images/soda.png"
+          logoSrc="/assets/images/soda.svg"
           logoWidth={56}
           logoHeight={22}
           discordHref={SOCIALS.soda_discord}

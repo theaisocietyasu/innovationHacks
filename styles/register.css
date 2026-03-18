@@ -19,7 +19,7 @@
 }
 
 /* ── Glass panel — darker + more opaque for legibility ─────── */
-.hero-glass-panel {
+.register-card .hero-glass-panel {
   background: rgba(8, 6, 18, 0.82);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
@@ -33,7 +33,7 @@
   width: 100%;
 }
 
-.glass-panel-inner {
+.register-card .glass-panel-inner {
   padding: 36px 40px;
 }
 
@@ -41,13 +41,13 @@
   .register-page-wrapper {
     padding: 80px 12px 40px;
   }
-  .glass-panel-inner {
+  .register-card .glass-panel-inner {
     padding: 24px 20px;
   }
 }
 
 /* ── Hero title (scoped to register context) ─────────────────── */
-.hero-title {
+.register-card .hero-title {
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
   line-height: 1.15;
@@ -56,7 +56,7 @@
 }
 
 /* ── Org logos row ───────────────────────────────────────────── */
-.org-logos-row {
+.register-card .org-logos-row {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -64,7 +64,7 @@
 }
 
 /* ── Register button ─────────────────────────────────────────── */
-.hero-register-btn {
+.register-card .hero-register-btn {
   background: rgba(160, 80, 255, 0.22);
   border: 1px solid rgba(160, 80, 255, 0.45);
   border-radius: 9999px;
@@ -82,12 +82,12 @@
   gap: 8px;
 }
 
-.hero-register-btn:hover:not(:disabled) {
+.register-card .hero-register-btn:hover:not(:disabled) {
   background: rgba(160, 80, 255, 0.38);
   box-shadow: 0 0 24px rgba(160, 80, 255, 0.3);
 }
 
-.hero-register-btn:disabled {
+.register-card .hero-register-btn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
