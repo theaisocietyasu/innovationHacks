@@ -102,7 +102,7 @@ const RegistrationSchema = z.object({
   mlhEmailConsent: booleanPreprocess(z.boolean()),
 });
 
-const MAX_RESUME_SIZE = 4 * 1024 * 1024; // 4 MB — safe buffer below Vercel's 4.5 MB response payload cap
+const MAX_RESUME_SIZE = 4 * 1024 * 1024; // 4 MB — safe buffer below Vercel's ~4.5 MB request/body size limit for uploads
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   // Connect early — rate limit check requires DB access.
