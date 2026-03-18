@@ -160,7 +160,7 @@ const Footer: React.FC = () => (
         />
         <OrgCard
           name="SoDA"
-          logoSrc="/assets/images/soda.png"
+          logoSrc="/assets/images/soda.svg"
           logoWidth={56}
           logoHeight={22}
           discordHref={SOCIALS.soda_discord}

@@ -122,7 +122,7 @@ export default function SponsorsSection2() {
         style: { width: "80px", height: "80px" },
       },
       {
-        src: "/assets/images/soda.png",
+        src: "/assets/images/soda.svg",
         alt: "SoDA LOGO",
         link: "https://thesoda.io/",
       },
