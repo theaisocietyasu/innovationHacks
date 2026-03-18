@@ -4,6 +4,7 @@ import { BsArrowRight } from "react-icons/bs";
 import { FaDiscord } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { GrMenu, GrClose } from "react-icons/gr";
+import Link from "next/link";
 import "@/styles/navbar.css";
 
 interface NavbarProps {
@@ -81,12 +82,12 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
           >
             <FaDiscord style={{ fontSize: "22px" }} />
           </a>
-          <a
+          <Link
             href="/register"
             className="hero-register-btn !text-sm !px-5 !py-2 !mt-0"
           >
             Register
-          </a>
+          </Link>
         </div>
         <div className="block md:hidden">
           <button
@@ -158,13 +159,13 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
                 <FaDiscord style={{ fontSize: "20px" }} />
                 Discord
               </a>
-              <a
+              <Link
                 href="/register"
                 className="hero-register-btn !text-sm !px-5 !py-2 !mt-0"
                 onClick={() => setIsOpenMenu(false)}
               >
                 Register
-              </a>
+              </Link>
             </div>
           </motion.div>
         )}
