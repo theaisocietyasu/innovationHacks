@@ -102,7 +102,7 @@ const RegistrationSchema = z.object({
   mlhEmailConsent: booleanPreprocess(z.boolean()),
 });
 
-const MAX_RESUME_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_RESUME_SIZE = 4 * 1024 * 1024; // 4 MB — safe buffer below Vercel's 4.5 MB response payload cap
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   // Connect early — rate limit check requires DB access.
@@ -159,8 +159,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         {
           error: {
             code: 'VALIDATION_FAILED',
-            message: 'Resume file must be 5 MB or smaller.',
-            details: [{ field: 'resumeFile', message: 'File size exceeds 5 MB limit.' }],
+            message: 'Resume file must be 4 MB or smaller.',
+            details: [{ field: 'resumeFile', message: 'File size exceeds 4 MB limit.' }],
           },
         },
         { status: 400 },

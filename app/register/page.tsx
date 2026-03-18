@@ -84,7 +84,7 @@ const schema = z.object({
   }),
   mlhEmailConsent: z.boolean(),
   resume: z.custom<File>((val) => val instanceof File, {
-    message: "Please upload your resume (PDF, max 5 MB)",
+    message: "Please upload your resume (PDF, max 4 MB)",
   }),
 });
 
@@ -166,8 +166,8 @@ export default function RegisterPage() {
     }
     const file = acceptedFiles[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      setError("resume" as keyof FormData, { message: "Resume must be under 5 MB" });
+    if (file.size > 4 * 1024 * 1024) {
+      setError("resume" as keyof FormData, { message: "Resume must be under 4 MB" });
       return;
     }
     setResumeFile(file);
@@ -758,7 +758,7 @@ export default function RegisterPage() {
                   {/* Resume dropzone */}
                   <div className="mt-4">
                     <label className="register-label">
-                      Resume (PDF, max 5 MB){" "}
+                      Resume (PDF, max 4 MB){" "}
                       <span style={{ color: "#ff6b6b" }} aria-label="required">*</span>
                     </label>
                     <div
@@ -786,7 +786,7 @@ export default function RegisterPage() {
                               : "Drag & drop your resume, or click to browse"}
                           </p>
                           <p style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.8rem", marginTop: 6 }}>
-                            PDF only · max 5 MB
+                            PDF only · max 4 MB
                           </p>
                         </div>
                       )}
