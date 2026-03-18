@@ -181,36 +181,71 @@ export default function SponsorsSection2() {
               : category.charAt(0).toUpperCase() + category.slice(1) + " "}{" "}
           </h2>
 
-          <div className="flex flex-wrap justify-center md:px-20">
-            {sponsorList.map((sponsor, index) => (
-              <a
-                key={index}
-                href={sponsor.link ? sponsor.link : ""}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <div
-                  className={`m-4 glassy-div bg-cover bg-center flex items-center justify-center no-repeat rounded-2xl md:p-5 p-1 overflow-hidden hover-effect-${category} ${
-                    sponsor.link ? "cursor-pointer" : "cursor-default"
-                  } ${categorySizes[category]?.imgSize}`}
-                  onClick={
-                    sponsor.link
-                      ? () => {
-                          handleClick(sponsor.link!);
-                        }
-                      : () => {}
-                  }
+          {category === "event" ? (
+            <div className="max-w-[1516px] mx-auto">
+              <div className="flex flex-wrap justify-center md:px-20">
+                {sponsorList.map((sponsor, index) => (
+                  <a
+                    key={index}
+                    href={sponsor.link ? sponsor.link : ""}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <div
+                      className={`m-4 glassy-div bg-cover bg-center flex items-center justify-center no-repeat rounded-2xl md:p-5 p-1 overflow-hidden hover-effect-${category} ${
+                        sponsor.link ? "cursor-pointer" : "cursor-default"
+                      } ${categorySizes[category]?.imgSize}`}
+                      onClick={
+                        sponsor.link
+                          ? () => {
+                              handleClick(sponsor.link!);
+                            }
+                          : () => {}
+                      }
+                    >
+                      <img
+                        alt=""
+                        src={`${sponsor.src}`}
+                        className="w-full h-full object-contain p-3"
+                        style={sponsor.style}
+                      />
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-wrap justify-center md:px-20">
+              {sponsorList.map((sponsor, index) => (
+                <a
+                  key={index}
+                  href={sponsor.link ? sponsor.link : ""}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  <img
-                    alt=""
-                    src={`${sponsor.src}`}
-                    className="w-full h-full object-contain p-3"
-                    style={sponsor.style}
-                  />
-                </div>
-              </a>
-            ))}
-          </div>
+                  <div
+                    className={`m-4 glassy-div bg-cover bg-center flex items-center justify-center no-repeat rounded-2xl md:p-5 p-1 overflow-hidden hover-effect-${category} ${
+                      sponsor.link ? "cursor-pointer" : "cursor-default"
+                    } ${categorySizes[category]?.imgSize}`}
+                    onClick={
+                      sponsor.link
+                        ? () => {
+                            handleClick(sponsor.link!);
+                          }
+                        : () => {}
+                    }
+                  >
+                    <img
+                      alt=""
+                      src={`${sponsor.src}`}
+                      className="w-full h-full object-contain p-3"
+                      style={sponsor.style}
+                    />
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       ))}
     </div>
