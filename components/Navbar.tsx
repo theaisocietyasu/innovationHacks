@@ -74,6 +74,12 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
           >
             FAQs
           </a>
+          <Link
+            href="/mentor"
+            className={`text-white hover:text-[#E066FF] transition-colors duration-300`}
+          >
+            Mentor
+          </Link>
           <a
             href={IH_DISCORD_URL}
             target="_blank"
@@ -149,6 +155,13 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
               >
                 FAQs
               </a>
+              <Link
+                href="/mentor"
+                className="text-white hover:text-[#E066FF] transition-colors duration-300"
+                onClick={() => setIsOpenMenu(false)}
+              >
+                Mentor
+              </Link>
               <a
                 href={IH_DISCORD_URL}
                 target="_blank"

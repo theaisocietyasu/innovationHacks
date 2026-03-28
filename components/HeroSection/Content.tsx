@@ -74,6 +74,13 @@ const Content: React.FC = () => {
           <FaDiscord aria-hidden="true" style={{ fontSize: "1.15rem", flexShrink: 0 }} />
           Join Discord
         </a>
+        <a
+          href="/mentor"
+          className="glass-button glass-button--mentor"
+          aria-label="Become a mentor"
+        >
+          Become a Mentor
+        </a>
       </div>
     </motion.div>
   );

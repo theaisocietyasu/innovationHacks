@@ -59,7 +59,7 @@ const About = () => {
             margin: "0 auto 28px",
           }}
         >
-          Compete for $10,000+ in prizes at ASU&apos;s premier spring hackathon.
+          Compete for prizes at ASU&apos;s premier spring hackathon.
           Free food, mentors, and workshops. All skill levels welcome.
         </p>
 
