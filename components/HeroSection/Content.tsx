@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import { motion, useAnimation, useInView } from "framer-motion";
-import { FaDiscord } from "react-icons/fa";
+import { FaDiscord, FaInstagram } from "react-icons/fa";
 import CountdownTimer from "./CountdownTimer";
-import { IH_DISCORD_URL } from '@/lib/constants';
+import { IH_DISCORD_URL, IH_INSTAGRAM_URL } from '@/lib/constants';
 import Image from "next/image";
 
 const Content: React.FC = () => {
@@ -73,6 +73,16 @@ const Content: React.FC = () => {
         >
           <FaDiscord aria-hidden="true" style={{ fontSize: "1.15rem", flexShrink: 0 }} />
           Join Discord
+        </a>
+        <a
+          href={IH_INSTAGRAM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="glass-button glass-button--instagram"
+          aria-label="Follow us on Instagram"
+        >
+          <FaInstagram aria-hidden="true" style={{ fontSize: "1.15rem", flexShrink: 0 }} />
+          Instagram
         </a>
         <a
           href="/mentor"

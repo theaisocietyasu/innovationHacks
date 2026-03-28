@@ -1,12 +1,12 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
 import { BsArrowRight } from "react-icons/bs";
-import { FaDiscord } from "react-icons/fa";
+import { FaDiscord, FaInstagram } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { GrMenu, GrClose } from "react-icons/gr";
 import Link from "next/link";
 import "@/styles/navbar.css";
-import { IH_DISCORD_URL } from "@/lib/constants";
+import { IH_DISCORD_URL, IH_INSTAGRAM_URL } from "@/lib/constants";
 
 interface NavbarProps {
   activeSection: string;
@@ -88,6 +88,15 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
             className="text-white transition-opacity duration-200 hover:opacity-70"
           >
             <FaDiscord style={{ fontSize: "22px" }} />
+          </a>
+          <a
+            href={IH_INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Follow us on Instagram"
+            className="text-white transition-opacity duration-200 hover:opacity-70"
+          >
+            <FaInstagram style={{ fontSize: "22px" }} />
           </a>
           <Link
             href="/register"
@@ -172,6 +181,17 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
               >
                 <FaDiscord style={{ fontSize: "20px" }} />
                 Discord
+              </a>
+              <a
+                href={IH_INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow us on Instagram"
+                className="text-white transition-opacity duration-200 hover:opacity-70 flex items-center gap-2"
+                onClick={() => setIsOpenMenu(false)}
+              >
+                <FaInstagram style={{ fontSize: "20px" }} />
+                Instagram
               </a>
               <Link
                 href="/register"
