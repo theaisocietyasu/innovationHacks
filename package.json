@@ -22,6 +22,7 @@
     "countries-list": "^3.3.0",
     "framer-motion": "^10.18.0",
     "gsap": "^3.12.2",
+    "jose": "^6.2.2",
     "mongoose": "^9.3.0",
     "next": "14.0.3",
     "next-themes": "^0.2.1",
