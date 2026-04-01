@@ -18,8 +18,7 @@ export async function GET(
     console.warn('[GET /api/resume] RESUME_ACCESS_TOKEN is not set — all requests will be rejected.');
   }
 
-  const url = new URL(request.url);
-  const providedToken = request.headers.get('x-resume-token') ?? url.searchParams.get('token');
+  const providedToken = request.headers.get('x-resume-token');
   if (!expectedToken || providedToken !== expectedToken) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
