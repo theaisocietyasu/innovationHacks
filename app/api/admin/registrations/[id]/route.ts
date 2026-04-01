@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/server/auth';
 import { connectToDatabase } from '@/lib/mongodb';
 import Registration from '@/lib/models/Registration';
+import { getClientIp, adminApiRateLimiter, rateLimitResponse } from '@/lib/server/rateLimit';
 
 const VALID_STATUSES = ['waitlisted', 'accepted', 'rejected', 'checked-in'] as const;
 type Status = (typeof VALID_STATUSES)[number];
@@ -11,6 +12,10 @@ export async function PATCH(
   request: Request,
   { params }: { params: { id: string } },
 ): Promise<NextResponse> {
+  const ip = getClientIp(request);
+  const rl = adminApiRateLimiter.check(ip);
+  if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
+
   const auth = await requireAdmin(request);
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
 

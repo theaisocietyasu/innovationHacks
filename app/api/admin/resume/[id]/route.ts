@@ -5,11 +5,16 @@ import mongoose from 'mongoose';
 import { GridFSBucket, ObjectId } from 'mongodb';
 import { connectToDatabase } from '@/lib/mongodb';
 import { requireAdmin } from '@/lib/server/auth';
+import { getClientIp, adminApiRateLimiter, rateLimitResponse } from '@/lib/server/rateLimit';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
+  const ip = getClientIp(request);
+  const rl = adminApiRateLimiter.check(ip);
+  if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
+
   const authResult = await requireAdmin(request);
   if (!authResult.ok) {
     return NextResponse.json({ error: authResult.error }, { status: authResult.status });

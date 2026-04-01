@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/server/auth';
 import { connectToDatabase } from '@/lib/mongodb';
 import Registration from '@/lib/models/Registration';
+import { getClientIp, adminApiRateLimiter, rateLimitResponse } from '@/lib/server/rateLimit';
 
 const VALID_SORT_FIELDS = new Set([
   'registeredAt', 'firstName', 'lastName', 'email', 'school',
@@ -10,6 +11,10 @@ const VALID_SORT_FIELDS = new Set([
 ]);
 
 export async function GET(request: Request): Promise<NextResponse> {
+  const ip = getClientIp(request);
+  const rl = adminApiRateLimiter.check(ip);
+  if (!rl.allowed) return rateLimitResponse(rl.retryAfterMs);
+
   const auth = await requireAdmin(request);
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
