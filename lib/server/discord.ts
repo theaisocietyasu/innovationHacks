@@ -68,8 +68,10 @@ export async function getGuildMemberRoles(
 }
 
 export function getAllowedLoginRoleIds(): string[] {
-  return (process.env.ADMIN_ROLE_ID ?? '')
-    .split(',')
-    .map((r) => r.trim())
-    .filter(Boolean);
+  const raw = process.env.ADMIN_ROLE_ID ?? '';
+  const ids = raw.split(',').map((r) => r.trim()).filter(Boolean);
+  if (ids.length === 0) {
+    throw new Error('ADMIN_ROLE_ID environment variable is required and must not be empty');
+  }
+  return ids;
 }

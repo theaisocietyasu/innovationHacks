@@ -1,7 +1,7 @@
 // lib/server/session.ts
 import { SignJWT, jwtVerify } from 'jose';
 
-export const ADMIN_SESSION_COOKIE_NAME = 'ih_admin_session';
+export { ADMIN_SESSION_COOKIE_NAME } from '@/lib/constants/admin';
 export const OAUTH_STATE_COOKIE = 'ih_oauth_state';
 
 export interface AdminSessionPayload {
