@@ -53,7 +53,7 @@ function LoginContent() {
           </a>
 
           <p className="mt-5 text-center text-xs text-white/40">
-            You must be a member of the AI Society server with the correct organiser role.
+            You must be a member of the Innovation Hacks Discord server with the correct organiser role.
           </p>
         </div>
       </div>
@@ -63,7 +63,11 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense>
+    <Suspense fallback={
+      <main className="min-h-screen bg-[#0a0614] flex items-center justify-center">
+        <div className="text-white/40 text-sm">Loading…</div>
+      </main>
+    }>
       <LoginContent />
     </Suspense>
   );
