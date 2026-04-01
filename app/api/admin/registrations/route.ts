@@ -6,7 +6,7 @@ import Registration from '@/lib/models/Registration';
 import { getClientIp, adminApiRateLimiter, rateLimitResponse } from '@/lib/server/rateLimit';
 
 const VALID_SORT_FIELDS = new Set([
-  'registeredAt', 'firstName', 'lastName', 'email', 'school',
+  'registeredAt', 'firstName', 'lastName', 'email',
   'levelOfStudy', 'status', 'age',
 ]);
 
@@ -19,8 +19,13 @@ export async function GET(request: Request): Promise<NextResponse> {
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   const { searchParams } = new URL(request.url);
-  const search = searchParams.get('search') ?? '';
+  const rawSearch = searchParams.get('search') ?? '';
+  // Escape regex special characters to prevent ReDoS via user-supplied input.
+  const search = rawSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const status = searchParams.get('status') ?? '';
+  if (status && !['waitlisted', 'accepted', 'rejected', 'checked-in'].includes(status)) {
+    return NextResponse.json({ error: 'Invalid status filter' }, { status: 400 });
+  }
   const rawSort = searchParams.get('sortBy') ?? 'registeredAt';
   const sortBy = VALID_SORT_FIELDS.has(rawSort) ? rawSort : 'registeredAt';
   const sortDir = searchParams.get('sortDir') === 'asc' ? 1 : -1;
@@ -35,7 +40,6 @@ export async function GET(request: Request): Promise<NextResponse> {
       { firstName: { $regex: search, $options: 'i' } },
       { lastName: { $regex: search, $options: 'i' } },
       { email: { $regex: search, $options: 'i' } },
-      { school: { $regex: search, $options: 'i' } },
     ];
   }
   if (status) filter.status = status;

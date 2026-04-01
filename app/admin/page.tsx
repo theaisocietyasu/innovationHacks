@@ -515,7 +515,7 @@ export default function AdminPage() {
         <div className="flex flex-wrap gap-3">
           <input
             type="text"
-            placeholder="Search name, email, school…"
+            placeholder="Search first name, last name, email…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="flex-1 min-w-56 rounded-lg border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#E066FF]/50"
