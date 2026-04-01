@@ -19,6 +19,7 @@ export interface IRegistration extends Document {
   mlhCodeOfConduct: boolean;
   mlhDataSharing: boolean;
   mlhEmailConsent: boolean;
+  status: 'waitlisted' | 'rejected' | 'approved';
   registeredAt: Date;
 }
 
@@ -57,6 +58,12 @@ const RegistrationSchema = new Schema<IRegistration>({
   mlhCodeOfConduct: { type: Boolean, required: true },
   mlhDataSharing: { type: Boolean, required: true },
   mlhEmailConsent: { type: Boolean, required: true },
+  status: {
+    type: String,
+    enum: ['waitlisted', 'rejected', 'approved'],
+    default: 'waitlisted',
+    required: true,
+  },
   registeredAt: { type: Date, default: Date.now },
 });
 
