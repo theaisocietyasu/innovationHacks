@@ -224,8 +224,6 @@ const SORT_OPTIONS: SortOption[] = [
   { label: 'Registered (newest)', sortBy: 'registeredAt', sortDir: 'desc' },
   { label: 'Registered (oldest)', sortBy: 'registeredAt', sortDir: 'asc' },
   { label: 'Name (A–Z)', sortBy: 'firstName', sortDir: 'asc' },
-  { label: 'School (A–Z)', sortBy: 'school', sortDir: 'asc' },
-  { label: 'Age', sortBy: 'age', sortDir: 'asc' },
 ];
 
 
