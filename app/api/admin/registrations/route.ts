@@ -16,7 +16,6 @@ export async function GET(request: Request): Promise<NextResponse> {
   const { searchParams } = new URL(request.url);
   const search = searchParams.get('search') ?? '';
   const status = searchParams.get('status') ?? '';
-  const levelOfStudy = searchParams.get('levelOfStudy') ?? '';
   const rawSort = searchParams.get('sortBy') ?? 'registeredAt';
   const sortBy = VALID_SORT_FIELDS.has(rawSort) ? rawSort : 'registeredAt';
   const sortDir = searchParams.get('sortDir') === 'asc' ? 1 : -1;
@@ -35,9 +34,8 @@ export async function GET(request: Request): Promise<NextResponse> {
     ];
   }
   if (status) filter.status = status;
-  if (levelOfStudy) filter.levelOfStudy = levelOfStudy;
 
-  const [registrations, total, stats] = await Promise.all([
+  const [rawRegistrations, total, stats] = await Promise.all([
     Registration.find(filter)
       .sort({ [sortBy]: sortDir })
       .skip((page - 1) * limit)
@@ -46,11 +44,19 @@ export async function GET(request: Request): Promise<NextResponse> {
       .lean(),
     Registration.countDocuments(filter),
     Registration.aggregate([
-      { $group: { _id: '$status', count: { $sum: 1 } } },
+      // Treat missing/null status as 'pending'
+      { $addFields: { effectiveStatus: { $ifNull: ['$status', 'waitlisted'] } } },
+      { $group: { _id: '$effectiveStatus', count: { $sum: 1 } } },
     ]),
   ]);
 
-  const statusCounts = { pending: 0, accepted: 0, waitlisted: 0, rejected: 0, total: 0 };
+  // Normalise missing status on returned docs too
+  const registrations = rawRegistrations.map((r) => ({
+    ...r,
+    status: (r as { status?: string }).status ?? 'waitlisted',
+  }));
+
+  const statusCounts = { waitlisted: 0, accepted: 0, rejected: 0, 'checked-in': 0, total: 0 };
   for (const s of stats as { _id: string; count: number }[]) {
     const key = s._id as keyof typeof statusCounts;
     if (key in statusCounts) statusCounts[key] = s.count;

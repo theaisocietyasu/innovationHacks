@@ -4,7 +4,7 @@ import { requireAdmin } from '@/lib/server/auth';
 import { connectToDatabase } from '@/lib/mongodb';
 import Registration from '@/lib/models/Registration';
 
-const VALID_STATUSES = ['pending', 'accepted', 'waitlisted', 'rejected'] as const;
+const VALID_STATUSES = ['waitlisted', 'accepted', 'rejected', 'checked-in'] as const;
 type Status = (typeof VALID_STATUSES)[number];
 
 export async function PATCH(
@@ -14,7 +14,12 @@ export async function PATCH(
   const auth = await requireAdmin(request);
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
-  const body = (await request.json()) as { status?: string };
+  let body: { status?: string };
+  try {
+    body = (await request.json()) as { status?: string };
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+  }
   const status = body.status as Status;
 
   if (!VALID_STATUSES.includes(status)) {

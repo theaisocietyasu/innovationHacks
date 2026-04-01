@@ -1,27 +1,18 @@
 export const runtime = 'nodejs';
 
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { GridFSBucket, ObjectId } from 'mongodb';
 import { connectToDatabase } from '@/lib/mongodb';
+import { requireAdmin } from '@/lib/server/auth';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
-  // ── Access control ──────────────────────────────────────────────────────────
-  // This is an internal admin endpoint. Protect it with a shared secret token
-  // passed in the x-resume-token header. Fail secure — if the env var is not
-  // set, we still enforce the check and return 401 rather than exposing resumes.
-  const expectedToken = process.env.RESUME_ACCESS_TOKEN;
-  if (!expectedToken) {
-    console.warn('[GET /api/resume] RESUME_ACCESS_TOKEN is not set — all requests will be rejected.');
-  }
-
-  const url = new URL(request.url);
-  const providedToken = request.headers.get('x-resume-token') ?? url.searchParams.get('token');
-  if (!expectedToken || providedToken !== expectedToken) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authResult = await requireAdmin(request);
+  if (!authResult.ok) {
+    return NextResponse.json({ error: authResult.error }, { status: authResult.status });
   }
 
   try {
@@ -69,13 +60,10 @@ export async function GET(
         'Content-Type': (file.metadata?.['contentType'] as string | undefined) ?? 'application/pdf',
         'Content-Disposition': `inline; filename="${file.filename}"`,
         'Cache-Control': 'private, no-store',
-        // Override the global X-Frame-Options: DENY set in next.config.js so
-        // the admin panel (same origin) can embed this response in an iframe.
-        'X-Frame-Options': 'SAMEORIGIN',
       },
     });
   } catch (err) {
-    console.error('[GET /api/resume] Error:', err);
+    console.error('[GET /api/admin/resume] Error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
