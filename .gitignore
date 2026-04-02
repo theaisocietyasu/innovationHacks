@@ -39,3 +39,4 @@ package-lock.json
 
 .vscode/.worktrees
 .worktrees
+.claude
