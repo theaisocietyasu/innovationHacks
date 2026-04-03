@@ -7,6 +7,7 @@ import { GridFSBucket } from 'mongodb';
 import { connectToDatabase } from '@/lib/mongodb';
 import Registration from '@/lib/models/Registration';
 import RateLimit from '@/lib/models/RateLimit';
+import { sendAcceptanceEmail } from '@/lib/sendAcceptanceEmail';
 
 // ── Rate limiting ─────────────────────────────────────────────────────────────
 // Distributed rate limiting via MongoDB — works correctly across all serverless
@@ -247,6 +248,25 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         );
       }
       throw saveErr;
+    }
+
+    // ── Step 6: Auto-accept + email (if ACCEPT_PARTICIPANTS=true) ────────────
+    if (process.env.ACCEPT_PARTICIPANTS === 'true') {
+      const emailResult = await sendAcceptanceEmail({
+        _id: registration._id,
+        firstName: registration.firstName,
+        lastName: registration.lastName,
+        email: registration.email,
+        school: registration.school,
+      });
+
+      if (emailResult.success) {
+        await Registration.updateOne(
+          { _id: registration._id },
+          { $set: { status: 'accepted', email_sent: true, checkin_token: emailResult.token } },
+        );
+      }
+      // If email fails, participant stays waitlisted — no error surfaced to user.
     }
 
     return NextResponse.json(
