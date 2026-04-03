@@ -34,6 +34,13 @@ const nextConfig = {
                     { key: 'Access-Control-Allow-Headers', value: 'Content-Type, x-resume-token' },
                 ],
             },
+            {
+                // Allow camera access on admin pages for QR scanner.
+                source: '/admin/(.*)',
+                headers: [
+                    { key: 'Permissions-Policy', value: 'camera=(self), microphone=(), geolocation=()' },
+                ],
+            },
         ];
     },
 }
