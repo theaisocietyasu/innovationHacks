@@ -21,6 +21,8 @@ export interface IRegistration extends Document {
   mlhEmailConsent: boolean;
   status: 'waitlisted' | 'accepted' | 'rejected' | 'checked-in';
   registeredAt: Date;
+  checkin_token?: string;
+  email_sent?: boolean;
 }
 
 const RegistrationSchema = new Schema<IRegistration>({
@@ -65,6 +67,8 @@ const RegistrationSchema = new Schema<IRegistration>({
     required: true,
   },
   registeredAt: { type: Date, default: Date.now },
+  checkin_token: { type: String, index: true, sparse: true },
+  email_sent: { type: Boolean, default: false },
 });
 
 const Registration: Model<IRegistration> =
