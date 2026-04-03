@@ -3,120 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <!-- Tell email clients this email has its own dark theme — do not auto-invert -->
   <meta name="color-scheme" content="light dark"/>
   <meta name="supported-color-schemes" content="light dark"/>
-  <title>Innovation Hacks 2.0 — You're In</title>
+  <title>Innovation Hacks 2.0 — Check-In Time Update</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap');
 
     * { font-family: 'Space Grotesk', sans-serif !important; }
 
-    /* ─── Color scheme: tell clients we manage our own dark mode ─── */
     :root { color-scheme: light dark; }
 
-    /* ─── Dark mode overrides — prevent Gmail/Apple Mail/Outlook
-           from auto-inverting our already-dark design ─────────────── */
-
-    /* Apple Mail / iOS Mail */
     @media (prefers-color-scheme: dark) {
       body, .email-body               { background-color: #000000 !important; }
       .main-card                      { background: rgba(10,6,20,0.88) !important;
                                         border-color: rgba(224,102,255,0.55) !important; }
       .greeting-text                  { color: #ffffff !important; }
       .sub-text                       { color: rgba(255,255,255,0.5) !important; }
-      .qr-block                       { background: rgba(123,97,255,0.06) !important;
+      .change-block                   { background: rgba(255,160,0,0.05) !important;
+                                        border-color: rgba(255,160,0,0.2) !important; }
+      .time-block                     { background: rgba(123,97,255,0.06) !important;
                                         border-color: rgba(224,102,255,0.2) !important; }
-      .reg-block                      { background: rgba(123,97,255,0.05) !important;
-                                        border-color: rgba(123,97,255,0.15) !important; }
-      .bring-block                    { background: rgba(255,255,255,0.02) !important;
-                                        border-color: rgba(255,255,255,0.06) !important; }
       .pill-purple                    { background: rgba(123,97,255,0.08) !important;
                                         border-color: rgba(123,97,255,0.2) !important; }
-      .pill-pink                      { background: rgba(224,102,255,0.08) !important;
-                                        border-color: rgba(224,102,255,0.2) !important; }
       .pill-label-purple              { color: #7B61FF !important; }
-      .pill-label-pink                { color: #E066FF !important; }
       .pill-value                     { color: #ffffff !important; }
       .pill-sub                       { color: rgba(255,255,255,0.35) !important; }
-      .qr-label                       { color: rgba(224,102,255,0.6) !important; }
-      .checkin-id-label               { color: rgba(255,255,255,0.2) !important; }
-      .checkin-id-value               { color: rgba(224,102,255,0.5) !important; }
-      .reg-section-label              { color: rgba(255,255,255,0.25) !important; }
-      .reg-key                        { color: rgba(255,255,255,0.4) !important; }
-      .reg-value                      { color: #ffffff !important; }
-      .bring-label                    { color: rgba(255,255,255,0.25) !important; }
-      .bring-item                     { color: rgba(255,255,255,0.65) !important; }
-      .arrow-pink                     { color: #E066FF !important; }
-      .arrow-purple                   { color: #7B61FF !important; }
+      .time-old                       { color: rgba(255,255,255,0.25) !important; }
+      .time-label                     { color: rgba(255,255,255,0.25) !important; }
       .footer-text                    { color: rgba(255,255,255,0.2) !important; }
       .footer-email                   { color: rgba(224,102,255,0.6) !important; }
       .footer-copy                    { color: rgba(255,255,255,0.12) !important; }
       .header-sub                     { color: rgba(255,255,255,0.45) !important; }
+      .alert-label                    { color: rgba(255,160,0,0.8) !important; }
     }
 
-    /* Gmail dark mode — uses u + .body selector chain */
     u + .email-body .main-card        { background: rgba(10,6,20,0.88) !important; }
     u + .email-body body              { background-color: #000000 !important; }
 
-    /* Outlook app on Android/iOS uses [data-ogsc] */
     [data-ogsc] body,
     [data-ogsc] .email-body          { background-color: #000000 !important; }
     [data-ogsc] .main-card           { background: rgba(10,6,20,0.88) !important; }
     [data-ogsc] .greeting-text       { color: #ffffff !important; }
-    [data-ogsc] .sub-text            { color: rgba(255,255,255,0.5) !important; }
 
-    /* ─── Mobile responsive ───────────────────────────────────────── */
     @media only screen and (max-width: 620px) {
-
       .outer-td  { padding: 24px 0 !important; }
-
-      /* Make the fixed-width container fluid */
       .email-container { width: 100% !important; max-width: 100% !important; }
-
-      /* Main card padding */
       .logo-row-td    { padding: 20px 16px 14px !important; }
       .header-td      { padding: 0 20px 24px !important; }
       .divider-td     { padding: 0 20px !important; }
       .greeting-td    { padding: 24px 20px 0 !important; }
-      .qr-td          { padding: 24px 20px !important; }
+      .change-td      { padding: 24px 20px !important; }
+      .time-td        { padding: 0 20px 24px !important; }
       .pills-td       { padding: 0 20px 24px !important; }
-      .reg-td         { padding: 0 20px 24px !important; }
-      .bring-td       { padding: 0 20px 24px !important; }
       .cta-td         { padding: 0 20px 32px !important; }
       .footer-divider { padding: 0 20px !important; }
       .footer-td      { padding: 20px 20px 32px !important; }
-
-      /* Logo scales to fit */
       .clubs-logo     { width: 100% !important; max-width: 220px !important; }
       .mlh-logo       { width: 44px !important; }
-
-      /* Header font */
       .event-title    { font-size: 36px !important; letter-spacing: -1px !important; }
-
-      /* Greeting */
       .greeting-text  { font-size: 19px !important; }
-
-      /* QR block */
-      .qr-block       { max-width: 100% !important; }
-      .qr-img         { width: 150px !important; height: 150px !important; }
-
-      /* Pills: stack vertically */
+      .time-new-val   { font-size: 36px !important; }
       .pills-table    { width: 100% !important; }
       .pill-row       { display: block !important; }
       .pill-cell      { display: block !important; width: 100% !important; box-sizing: border-box !important;
                         margin-bottom: 10px !important; padding: 14px 10px !important; }
       .pill-spacer    { display: none !important; }
-
-      /* CTA button */
       .cta-btn        { padding: 14px 28px !important; font-size: 12px !important; }
     }
   </style>
 </head>
 <body class="email-body" style="margin:0;padding:0;background-color:#000000;font-family:'Space Grotesk',sans-serif;">
 
-  <span style="display:none;max-height:0;overflow:hidden;font-size:0;">Your Innovation Hacks 2.0 check-in QR is inside. See you tonight 🚀</span>
+  <span style="display:none;max-height:0;overflow:hidden;font-size:0;">Important update: check-in at Innovation Hacks 2.0 is now at 6:30 PM, not 5:00 PM.</span>
 
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#000000;">
     <tr>
@@ -175,32 +134,73 @@
                 <!-- Greeting -->
                 <tr>
                   <td class="greeting-td" style="padding:36px 40px 0;">
-                    <p class="greeting-text" style="margin:0;font-size:24px;font-weight:700;color:#ffffff;">Hey Gunbir, you're in. 🎉</p>
+                    <p class="greeting-text" style="margin:0;font-size:24px;font-weight:700;color:#ffffff;">Heads up, {{first_name}}.</p>
                     <p class="sub-text" style="margin:12px 0 0;font-size:15px;line-height:1.75;color:rgba(255,255,255,0.5);font-weight:400;">
-                      Your spot at Innovation Hacks 2.0 is confirmed. Below is your personal check-in QR code — show it at the door and you're good to go. Screenshot it or keep this email handy.
+                      We have a quick update on tonight's check-in time. Your registration is still confirmed — this only affects when doors open.
                     </p>
+                  </td>
+                </tr>
+
+                <!-- Alert block -->
+                <tr>
+                  <td class="change-td" style="padding:28px 40px;">
+                    <table class="change-block" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:rgba(255,160,0,0.05);border:1px solid rgba(255,160,0,0.2);border-radius:14px;overflow:hidden;">
+                      <tr><td style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,160,0,0.6),rgba(255,200,0,0.4),transparent);"></td></tr>
+                      <tr>
+                        <td align="center" style="padding:24px 28px 8px;">
+                          <p class="alert-label" style="margin:0;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,160,0,0.8);font-weight:600;">⚠ &nbsp; CHECK-IN TIME UPDATE &nbsp; ⚠</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center" style="padding:20px 28px 28px;">
+                          <table cellpadding="0" cellspacing="0" border="0" align="center">
+                            <tr>
+                              <!-- Old time -->
+                              <td align="center" style="padding:0 20px;">
+                                <p class="time-label" style="margin:0 0 6px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);font-weight:600;">WAS</p>
+                                <p class="time-old" style="margin:0;font-size:42px;font-weight:800;color:rgba(255,255,255,0.2);letter-spacing:-1px;text-decoration:line-through;">5:00</p>
+                                <p class="time-label" style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,0.2);font-weight:500;">PM</p>
+                              </td>
+                              <!-- Arrow -->
+                              <td align="center" style="padding:0 8px;">
+                                <p style="margin:0;font-size:28px;color:rgba(255,160,0,0.5);">→</p>
+                              </td>
+                              <!-- New time -->
+                              <td align="center" style="padding:0 20px;">
+                                <p class="time-label" style="margin:0 0 6px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(224,102,255,0.6);font-weight:600;">NOW</p>
+                                <p class="time-new time-new-val" style="margin:0;font-size:42px;font-weight:800;color:#ffffff;letter-spacing:-1px;">6:30</p>
+                                <p class="time-label" style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,0.5);font-weight:500;">PM</p>
+                              </td>
+                            </tr>
+                          </table>
+                          <p class="sub-text" style="margin:20px 0 0;font-size:13px;color:rgba(255,255,255,0.4);line-height:1.6;">
+                            April 3rd &nbsp;·&nbsp; LSA-191, Tempe, AZ
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
 
                 <!-- QR block -->
                 <tr>
-                  <td class="qr-td" align="center" style="padding:32px 40px;">
+                  <td class="qr-td" align="center" style="padding:0 40px 28px;">
                     <table class="qr-block" cellpadding="0" cellspacing="0" border="0" style="background:rgba(123,97,255,0.06);border:1px solid rgba(224,102,255,0.2);border-radius:18px;overflow:hidden;width:100%;max-width:320px;">
                       <tr><td style="height:1px;background:linear-gradient(90deg,transparent,#E066FF,#7B61FF,transparent);"></td></tr>
                       <tr>
-                        <td align="center" style="padding:28px 28px 8px;">
+                        <td align="center" style="padding:20px 28px 8px;">
                           <p class="qr-label" style="margin:0;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(224,102,255,0.6);font-weight:600;">✦ &nbsp; YOUR CHECK-IN QR &nbsp; ✦</p>
                         </td>
                       </tr>
                       <tr>
-                        <td align="center" style="padding:16px 28px;">
+                        <td align="center" style="padding:12px 28px;">
                           <div style="display:inline-block;padding:12px;background:#ffffff;border-radius:14px;box-shadow:0 0 40px rgba(224,102,255,0.25),0 0 80px rgba(123,97,255,0.12);">
                             <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=IH2026-GUNBIR-A3F9B2C1&color=0a0614&bgcolor=ffffff" width="180" height="180" alt="Check-in QR Code" style="display:block;width:180px;height:180px;border-radius:6px;" />
                           </div>
                         </td>
                       </tr>
                       <tr>
-                        <td align="center" style="padding:8px 28px 28px;">
+                        <td align="center" style="padding:8px 28px 20px;">
                           <p class="checkin-id-label" style="margin:0 0 4px;font-size:10px;color:rgba(255,255,255,0.2);letter-spacing:0.5px;">CHECK-IN ID</p>
                           <p class="checkin-id-value" style="margin:0;font-size:12px;color:rgba(224,102,255,0.5);letter-spacing:2px;font-weight:500;">IH2026-GUNBIR-A3F9B2C1</p>
                         </td>
@@ -209,7 +209,7 @@
                   </td>
                 </tr>
 
-                <!-- Event detail pills -->
+                <!-- Updated detail pills -->
                 <tr>
                   <td class="pills-td" style="padding:0 40px 36px;">
                     <table class="pills-table" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -220,58 +220,16 @@
                           <p class="pill-sub" style="margin:2px 0 0;font-size:11px;color:rgba(255,255,255,0.35);">2026</p>
                         </td>
                         <td class="pill-spacer" width="4%"></td>
-                        <td class="pill-cell pill-pink" width="32%" align="center" style="padding:18px 10px;background:rgba(224,102,255,0.08);border:1px solid rgba(224,102,255,0.2);border-radius:12px;">
-                          <p class="pill-label-pink" style="margin:0 0 5px;font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:#E066FF;font-weight:600;">CHECK-IN</p>
+                        <td class="pill-cell" width="32%" align="center" style="padding:18px 10px;background:rgba(224,102,255,0.10);border:1px solid rgba(224,102,255,0.35);border-radius:12px;">
+                          <p style="margin:0 0 5px;font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:#E066FF;font-weight:600;">CHECK-IN</p>
                           <p class="pill-value" style="margin:0;font-size:15px;font-weight:700;color:#fff;">6:30 PM</p>
                           <p class="pill-sub" style="margin:2px 0 0;font-size:11px;color:rgba(255,255,255,0.35);">April 3rd</p>
                         </td>
                         <td class="pill-spacer" width="4%"></td>
                         <td class="pill-cell pill-purple" width="32%" align="center" style="padding:18px 10px;background:rgba(123,97,255,0.08);border:1px solid rgba(123,97,255,0.2);border-radius:12px;">
                           <p class="pill-label-purple" style="margin:0 0 5px;font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:#7B61FF;font-weight:600;">LOCATION</p>
-                          <p class="pill-value" style="margin:0;font-size:15px;font-weight:700;color:#fff;">LSA</p>
+                          <p class="pill-value" style="margin:0;font-size:15px;font-weight:700;color:#fff;">LSA-191</p>
                           <p class="pill-sub" style="margin:2px 0 0;font-size:11px;color:rgba(255,255,255,0.35);">Tempe, AZ</p>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                <!-- Registration details -->
-                <tr>
-                  <td class="reg-td" style="padding:0 40px 36px;">
-                    <table class="reg-block" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:rgba(123,97,255,0.05);border:1px solid rgba(123,97,255,0.15);border-radius:12px;">
-                      <tr>
-                        <td style="padding:22px 24px;">
-                          <p class="reg-section-label" style="margin:0 0 16px;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.25);font-weight:600;">YOUR REGISTRATION</p>
-                          <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                            <tr>
-                              <td class="reg-key" style="padding:5px 0;font-size:13px;color:rgba(255,255,255,0.4);width:40%;">Name</td>
-                              <td class="reg-value" style="padding:5px 0;font-size:13px;color:#fff;font-weight:600;">Gunbir Singh</td>
-                            </tr>
-                            <tr>
-                              <td class="reg-key" style="padding:5px 0;font-size:13px;color:rgba(255,255,255,0.4);">School</td>
-                              <td class="reg-value" style="padding:5px 0;font-size:13px;color:#fff;font-weight:600;">Arizona State University</td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                <!-- What to bring -->
-                <tr>
-                  <td class="bring-td" style="padding:0 40px 36px;">
-                    <table class="bring-block" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;">
-                      <tr>
-                        <td style="padding:22px 24px;">
-                          <p class="bring-label" style="margin:0 0 16px;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.25);font-weight:600;">WHAT TO BRING</p>
-                          <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                            <tr><td class="bring-item" style="padding:5px 0;font-size:14px;color:rgba(255,255,255,0.65);"><span class="arrow-pink" style="color:#E066FF;margin-right:10px;">→</span>This QR code (screenshot it)</td></tr>
-                            <tr><td class="bring-item" style="padding:5px 0;font-size:14px;color:rgba(255,255,255,0.65);"><span class="arrow-pink" style="color:#E066FF;margin-right:10px;">→</span>Student ID</td></tr>
-                            <tr><td class="bring-item" style="padding:5px 0;font-size:14px;color:rgba(255,255,255,0.65);"><span class="arrow-pink" style="color:#E066FF;margin-right:10px;">→</span>Laptop + charger</td></tr>
-                            <tr><td class="bring-item" style="padding:5px 0;font-size:14px;color:rgba(255,255,255,0.65);"><span class="arrow-purple" style="color:#7B61FF;margin-right:10px;">→</span>Sleep is optional. The grind is not.</td></tr>
-                          </table>
                         </td>
                       </tr>
                     </table>
@@ -298,7 +256,7 @@
                     <p class="footer-text" style="margin:0 0 6px;font-size:12px;color:rgba(255,255,255,0.2);">Questions? Find us on Discord or email us at</p>
                     <a class="footer-email" href="mailto:help@innovationhacks.dev" style="font-size:13px;color:rgba(224,102,255,0.6);text-decoration:none;font-weight:500;">help@innovationhacks.dev</a>
                     <p class="footer-copy" style="margin:20px 0 0;font-size:11px;color:rgba(255,255,255,0.12);line-height:1.8;">
-                      © 2026 Innovation Hacks &nbsp;·&nbsp; AI Society × GDG ASU × ASODA<br/>
+                      © 2026 Innovation Hacks &nbsp;·&nbsp; AI Society × GDG ASU × SODA<br/>
                       Arizona State University, Tempe, AZ
                     </p>
                   </td>
