@@ -6,7 +6,7 @@
  *
  * Required in .env.local:
  *   MONGODB_URI=...
- *   RESEND_API_KEY=...
+ *   ZEPTOMAIL_TOKEN=Zoho-enczapikey <your_token>
  *   EMAIL_FROM=...
  *
  * Optional in .env.local:
@@ -20,11 +20,11 @@ const path = require('path');
 const fs = require('fs');
 const mongoose = require('mongoose');
 const QRCode = require('qrcode');
-const { Resend } = require('resend');
+const { SendMailClient } = require('zeptomail');
 
 // ─── Env validation ──────────────────────────────────────────────────────────
 
-const REQUIRED_ENV = ['MONGODB_URI', 'RESEND_API_KEY', 'EMAIL_FROM'];
+const REQUIRED_ENV = ['MONGODB_URI', 'ZEPTOMAIL_TOKEN', 'EMAIL_FROM'];
 for (const key of REQUIRED_ENV) {
   if (!process.env[key]) {
     console.error(`Missing required env var: ${key}`);
@@ -77,7 +77,10 @@ function buildHtml(template, { firstName, fullName, school, tokenLabel }) {
 
 // ─── Per-registration processor ──────────────────────────────────────────────
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const client = new SendMailClient({
+  url: 'api.zeptomail.com/',
+  token: process.env.ZEPTOMAIL_TOKEN,
+});
 const SITE_URL = process.env.SITE_URL || 'https://innovationhacks.dev';
 
 async function processRegistration(reg, template) {
@@ -111,23 +114,20 @@ async function processRegistration(reg, template) {
       tokenLabel,
     });
 
-    // 6. Send email via Resend with QR as inline CID attachment
-    const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM,
-      to: reg.email,
+    // 6. Send email via Zeptomail with QR as inline CID image
+    const resp = await client.sendMail({
+      from: { address: process.env.EMAIL_FROM },
+      to: [{ email_address: { address: reg.email } }],
       subject: "You're in — Innovation Hacks 2.0 Check-in QR 🚀",
-      html,
-      attachments: [
+      htmlbody: html,
+      inline_images: [
         {
-          filename: 'checkin-qr.png',
-          content: buffer,
-          contentType: 'image/png',
-          contentId: 'checkin-qr',
+          cid: 'checkin-qr',
+          content: buffer.toString('base64'),
+          mime_type: 'image/png',
         },
       ],
     });
-
-    if (error) throw new Error(`Resend error: ${error.message}`);
 
     // 8. Update DB on success
     await Registration.updateOne(
@@ -135,7 +135,7 @@ async function processRegistration(reg, template) {
       { $set: { checkin_token: token, email_sent: true, status: 'accepted' } }
     );
 
-    console.log(`✓ Sent to ${fullName} <${reg.email}> (id: ${data.id})`);
+    console.log(`✓ Sent to ${fullName} <${reg.email}> (request_id: ${resp?.request_id ?? 'n/a'})`);
     return { success: true };
   } catch (err) {
     console.error(`✗ Failed for ${fullName} <${reg.email}>:`, err.message || err);
@@ -205,6 +205,7 @@ async function main() {
     console.log(
       `Progress: ${Math.min(i + BATCH_SIZE, registrations.length)}/${registrations.length}`
     );
+    await new Promise(resolve => setTimeout(resolve, 1000)); // brief pause to avoid overwhelming the email service
   }
 
   console.log(`\nDone. ${sent} email(s) sent, ${failed} failed.`);
