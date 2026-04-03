@@ -171,8 +171,8 @@ interface Registration {
   countryOfResidence: string;
   linkedinUrl?: string;
   githubUrl: string;
-  resumeUrl: string;
-  resumeFileName: string;
+  resumeUrl?: string;
+  resumeFileName?: string;
   registeredAt: string;
   status: Status;
 }
@@ -259,11 +259,13 @@ function ResumeButton({
   lastName,
   onOpenModal,
 }: {
-  resumeUrl: string;
+  resumeUrl?: string;
   firstName: string;
   lastName: string;
   onOpenModal: (v: ViewingResume) => void;
 }) {
+  if (!resumeUrl) return <span className="text-white/20 text-sm">—</span>;
+
   const fileId = resumeUrl.split('/').pop() ?? '';
   const adminResumeUrl = `/api/admin/resume/${fileId}`;
 
@@ -679,7 +681,7 @@ export default function AdminPage() {
                     </td>
                     {/* Resume cell */}
                     <td className="px-5 py-4">
-                      {(() => {
+                      {r.resumeUrl ? (() => {
                         const fileId = r.resumeUrl.split('/').pop() ?? '';
                         const adminResumeUrl = `/api/admin/resume/${fileId}`;
                         return (
@@ -699,7 +701,7 @@ export default function AdminPage() {
                             <PdfIcon className="h-4 w-4" />
                           </button>
                         );
-                      })()}
+                      })() : <span className="text-white/20 text-sm">—</span>}
                     </td>
                     {/* Sticky Actions cell */}
                     <td className="px-5 py-4 sticky right-0 bg-[#0a0614] z-10 border-l border-white/5">
