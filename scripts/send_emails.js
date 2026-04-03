@@ -143,11 +143,12 @@ async function processRegistration(reg, template) {
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  if (args.includes('--all')) return { mode: 'all' };
+  const force = args.includes('--force');
+  if (args.includes('--all')) return { mode: 'all', force };
   const emailIdx = args.indexOf('--email');
   if (emailIdx !== -1 && args[emailIdx + 1]) return { mode: 'single', email: args[emailIdx + 1] };
   console.error('Usage:');
-  console.error('  node scripts/send_emails.js --all');
+  console.error('  node scripts/send_emails.js --all [--force]');
   console.error('  node scripts/send_emails.js --email <address>');
   process.exit(1);
 }
@@ -155,7 +156,7 @@ function parseArgs() {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  const { mode, email } = parseArgs();
+  const { mode, email, force } = parseArgs();
 
   console.log('Connecting to MongoDB…');
   await mongoose.connect(process.env.MONGODB_URI);
@@ -163,7 +164,9 @@ async function main() {
 
   const query = mode === 'single'
     ? { email: email.toLowerCase() }
-    : { email_sent: true, time_update_sent: { $ne: true } };
+    : force
+      ? { email_sent: true }
+      : { email_sent: true, time_update_sent: { $ne: true } };
 
   const registrations = await Registration.find(query).lean();
 
