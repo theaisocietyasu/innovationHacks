@@ -26,7 +26,7 @@ async function checkRateLimit(ip: string): Promise<boolean> {
   const entry = await RateLimit.findOneAndUpdate(
     { ip, resetAt: { $gt: now } },
     { $inc: { count: 1 }, $setOnInsert: { resetAt } },
-    { upsert: true, new: true },
+    { upsert: true, returnDocument: 'after' },
   );
 
   return entry.count <= RATE_LIMIT_MAX;
