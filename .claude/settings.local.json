@@ -9,7 +9,8 @@
       "WebFetch(domain:npmtrends.com)",
       "Bash(node -e \"require\\('qrcode'\\); console.log\\('qrcode ok'\\)\")",
       "Bash(node -e \"require\\('resend'\\); console.log\\('resend ok'\\)\")",
-      "WebFetch(domain:www.zoho.com)"
+      "WebFetch(domain:www.zoho.com)",
+      "Bash(npm run:*)"
     ]
   }
 }
