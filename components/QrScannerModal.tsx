@@ -23,6 +23,8 @@ export default function QrScannerModal({ isOpen, onClose }: QrScannerModalProps)
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
   const resultTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
 
   const stopScanner = () => {
     activeRef.current = false;
@@ -41,6 +43,8 @@ export default function QrScannerModal({ isOpen, onClose }: QrScannerModalProps)
     stopScanner();
     setResult(null);
     setCameraError(null);
+    setDevices([]);
+    setSelectedDeviceId('');
     if (resultTimeoutRef.current) clearTimeout(resultTimeoutRef.current);
     onClose();
   };
@@ -66,7 +70,7 @@ export default function QrScannerModal({ isOpen, onClose }: QrScannerModalProps)
     }
   };
 
-  const startScanner = async () => {
+  const startScanner = async (deviceId?: string) => {
     if (!videoRef.current) return;
     activeRef.current = true;
     setCameraError(null);
@@ -76,13 +80,25 @@ export default function QrScannerModal({ isOpen, onClose }: QrScannerModalProps)
       const { BrowserMultiFormatReader } = await import('@zxing/browser');
       const reader = new BrowserMultiFormatReader();
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      });
+      const constraints: MediaStreamConstraints = {
+        video: deviceId ? { deviceId: { exact: deviceId } } : { facingMode: 'environment' },
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
       if (!activeRef.current) {
         stream.getTracks().forEach((t) => t.stop());
         return;
+      }
+
+      // Enumerate devices after permission is granted (labels are available now)
+      if (devices.length === 0) {
+        const allDevices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = allDevices.filter((d) => d.kind === 'videoinput');
+        setDevices(videoDevices);
+        // Set the selected device to the active track's device
+        const activeTrackId = stream.getVideoTracks()[0]?.getSettings().deviceId;
+        if (activeTrackId) setSelectedDeviceId(activeTrackId);
       }
 
       streamRef.current = stream;
@@ -114,6 +130,14 @@ export default function QrScannerModal({ isOpen, onClose }: QrScannerModalProps)
     }
   };
 
+  const handleDeviceChange = (newDeviceId: string) => {
+    setSelectedDeviceId(newDeviceId);
+    setResult(null);
+    if (resultTimeoutRef.current) clearTimeout(resultTimeoutRef.current);
+    stopScanner();
+    void startScanner(newDeviceId);
+  };
+
   useEffect(() => {
     if (isOpen) {
       void startScanner();
@@ -121,6 +145,8 @@ export default function QrScannerModal({ isOpen, onClose }: QrScannerModalProps)
       stopScanner();
       setResult(null);
       setCameraError(null);
+      setDevices([]);
+      setSelectedDeviceId('');
     }
     return () => {
       stopScanner();
@@ -259,6 +285,24 @@ export default function QrScannerModal({ isOpen, onClose }: QrScannerModalProps)
       </div>
 
       <p className="mt-4 text-white/40 text-sm">Point camera at a student&apos;s QR code</p>
+
+      {/* Camera selector */}
+      {devices.length > 1 && (
+        <div className="mt-3 w-full max-w-sm px-4">
+          <select
+            value={selectedDeviceId}
+            onChange={(e) => handleDeviceChange(e.target.value)}
+            className="w-full bg-white/5 border border-white/10 text-white/70 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-[#E066FF]/50 appearance-none cursor-pointer"
+            aria-label="Select camera"
+          >
+            {devices.map((device, i) => (
+              <option key={device.deviceId} value={device.deviceId} className="bg-[#0a0614]">
+                {device.label || `Camera ${i + 1}`}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <style jsx>{`
         @keyframes scan-line {
