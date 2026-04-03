@@ -335,8 +335,10 @@ export default function AdminPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [trackSlots, setTrackSlots] = useState<TrackSlot[]>([]);
   const [teamsLoading, setTeamsLoading] = useState(false);
-  const [slotInputs, setSlotInputs] = useState<Record<string, number>>({});
+  const [slotInputs, setSlotInputs] = useState<Record<string, string>>({});
   const [slotSaving, setSlotSaving] = useState<Record<string, boolean>>({});
+  const [globalMax, setGlobalMax] = useState('');
+  const [applyingAll, setApplyingAll] = useState(false);
   const [runningAssignment, setRunningAssignment] = useState(false);
   const [assignmentComplete, setAssignmentComplete] = useState(false);
   const [lateTrackSelections, setLateTrackSelections] = useState<Record<string, string>>({});
@@ -383,8 +385,8 @@ export default function AdminPage() {
         const tracksData = await tracksRes.json() as { revealed: boolean; tracks: TrackSlot[] };
         setTrackSlots(tracksData.tracks);
         if (tracksData.revealed) setAssignmentComplete(true);
-        const inputs: Record<string, number> = {};
-        for (const s of tracksData.tracks) inputs[s.name] = s.maxTeams;
+        const inputs: Record<string, string> = {};
+        for (const s of tracksData.tracks) inputs[s.name] = String(s.maxTeams);
         setSlotInputs(inputs);
       }
     } finally {
@@ -478,7 +480,7 @@ export default function AdminPage() {
       const res = await fetch('/api/admin/tracks', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, maxTeams: slotInputs[name] ?? 0 }),
+        body: JSON.stringify({ name, maxTeams: parseInt(slotInputs[name] ?? '0', 10) || 0 }),
       });
       if (!res.ok) alert('Failed to save track capacity.');
       else await fetchTeamsData();
@@ -486,6 +488,29 @@ export default function AdminPage() {
       alert('Network error saving track capacity.');
     } finally {
       setSlotSaving(prev => ({ ...prev, [name]: false }));
+    }
+  };
+
+  const handleApplyAll = async () => {
+    const max = parseInt(globalMax, 10);
+    if (isNaN(max) || max < 0) { alert('Enter a valid number.'); return; }
+    setApplyingAll(true);
+    try {
+      await Promise.all(
+        trackSlots.map(s =>
+          fetch('/api/admin/tracks', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: s.name, maxTeams: max }),
+          })
+        )
+      );
+      await fetchTeamsData();
+      setGlobalMax('');
+    } catch {
+      alert('Network error applying to all tracks.');
+    } finally {
+      setApplyingAll(false);
     }
   };
 
@@ -990,33 +1015,58 @@ export default function AdminPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
           {/* Track Overview */}
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px' }}>
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '24px' }}>
             <h3 style={{ margin: '0 0 4px', fontSize: '1rem', fontWeight: 700 }}>Track Overview</h3>
-            <p style={{ margin: '0 0 16px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>
-              Total teams: {teams.length}
+            <p style={{ margin: '0 0 20px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>
+              Total registered: {teams.length} &nbsp;|&nbsp; Assigned: {teams.filter(t => t.status === 'assigned').length} &nbsp;|&nbsp; Pending: {teams.filter(t => t.status === 'pending').length}
             </p>
+
+            {/* Global max — set all tracks at once */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', padding: '14px 16px', background: 'rgba(224,102,255,0.06)', border: '1px solid rgba(224,102,255,0.18)', borderRadius: '10px' }}>
+              <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)', whiteSpace: 'nowrap' }}>Max teams per track (all):</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="e.g. 15"
+                value={globalMax}
+                onChange={e => { if (/^\d*$/.test(e.target.value)) setGlobalMax(e.target.value); }}
+                style={{ width: '80px', padding: '7px 10px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.08)', color: '#fff', fontSize: '0.9rem' }}
+              />
+              <button
+                onClick={() => void handleApplyAll()}
+                disabled={applyingAll || globalMax === ''}
+                style={{ padding: '7px 18px', borderRadius: '7px', border: 'none', background: 'linear-gradient(135deg,#E066FF,#7B61FF)', color: '#fff', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', opacity: (applyingAll || globalMax === '') ? 0.5 : 1, whiteSpace: 'nowrap' }}
+              >
+                {applyingAll ? 'Applying…' : 'Apply to All'}
+              </button>
+            </div>
+
+            {/* Per-track cards */}
             {teamsLoading ? (
               <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>Loading…</p>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '14px' }}>
                 {trackSlots.map((slot) => (
-                  <div key={slot.name} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <p style={{ margin: 0, fontWeight: 600, fontSize: '0.9rem' }}>{slot.name}</p>
-                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)' }}>
+                  <div key={slot.name} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <p style={{ margin: 0, fontWeight: 700, fontSize: '1rem' }}>{slot.name}</p>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'rgba(255,255,255,0.45)' }}>
                       {slot.currentCount} / {slot.maxTeams} teams
                     </p>
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                       <input
-                        type="number"
-                        min={0}
-                        value={slotInputs[slot.name] ?? 0}
-                        onChange={(e) => setSlotInputs(prev => ({ ...prev, [slot.name]: Number(e.target.value) }))}
-                        style={{ width: '64px', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.07)', color: '#fff', fontSize: '0.85rem' }}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        placeholder="max"
+                        value={slotInputs[slot.name] ?? ''}
+                        onChange={e => { if (/^\d*$/.test(e.target.value)) setSlotInputs(prev => ({ ...prev, [slot.name]: e.target.value })); }}
+                        style={{ width: '72px', padding: '6px 10px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.07)', color: '#fff', fontSize: '0.9rem' }}
                       />
                       <button
                         onClick={() => void handleSaveSlot(slot.name)}
                         disabled={slotSaving[slot.name]}
-                        style={{ padding: '4px 12px', borderRadius: '6px', border: 'none', background: '#E066FF', color: '#fff', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', opacity: slotSaving[slot.name] ? 0.6 : 1 }}
+                        style={{ padding: '6px 14px', borderRadius: '7px', border: 'none', background: '#E066FF', color: '#fff', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', opacity: slotSaving[slot.name] ? 0.6 : 1 }}
                       >
                         {slotSaving[slot.name] ? 'Saving…' : 'Save'}
                       </button>

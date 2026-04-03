@@ -3,12 +3,14 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface ITeamMember {
   name: string;
   email: string;
+  discord?: string;
 }
 
 export interface ITeam extends Document {
   teamName: string;
   leadName: string;
   leadEmail: string;
+  leadDiscord: string;
   members: ITeamMember[];
   preferences: string[];
   assignedTrack: string | null;
@@ -21,7 +23,8 @@ const TeamSchema = new Schema<ITeam>({
   teamName: { type: String, required: true },
   leadName: { type: String, required: true },
   leadEmail: { type: String, required: true, unique: true },
-  members: [{ name: String, email: String }],
+  leadDiscord: { type: String, required: true },
+  members: [{ name: String, email: String, discord: String }],
   preferences: {
     type: [String],
     validate: {
