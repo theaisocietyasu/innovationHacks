@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs ls:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:npmtrends.com)",
+      "Bash(node -e \"require\\('qrcode'\\); console.log\\('qrcode ok'\\)\")",
+      "Bash(node -e \"require\\('resend'\\); console.log\\('resend ok'\\)\")"
+    ]
+  }
+}

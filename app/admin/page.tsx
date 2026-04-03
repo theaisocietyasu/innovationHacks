@@ -3,6 +3,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+
+const QrScannerModal = dynamic(() => import('@/components/QrScannerModal'), { ssr: false });
 
 // ─── Discord icon ─────────────────────────────────────────────────────────────
 
@@ -303,6 +306,9 @@ export default function AdminPage() {
   // PDF viewer modal
   const [viewingResume, setViewingResume] = useState<ViewingResume | null>(null);
 
+  // QR scanner modal
+  const [qrScannerOpen, setQrScannerOpen] = useState(false);
+
   // Close modal on Escape
   useEffect(() => {
     if (!viewingResume) return;
@@ -448,6 +454,9 @@ export default function AdminPage() {
         <ResumePdfModal viewing={viewingResume} onClose={() => setViewingResume(null)} />
       )}
 
+      {/* QR scanner modal */}
+      <QrScannerModal isOpen={qrScannerOpen} onClose={() => setQrScannerOpen(false)} />
+
       {/* Nav */}
       <nav className="bg-gradient-to-b from-[#171721] to-[#0a0614] sticky top-0 z-50 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
@@ -459,7 +468,7 @@ export default function AdminPage() {
             </span>
           </div>
 
-          {/* Right — user + sign out */}
+          {/* Right — user + scan + sign out */}
           <div className="flex items-center gap-3">
             {user && (
               <div className="hidden sm:flex items-center gap-2 text-sm text-white/50">
@@ -467,6 +476,19 @@ export default function AdminPage() {
                 <span className="font-medium text-white/70">{user.username}</span>
               </div>
             )}
+            <button
+              onClick={() => setQrScannerOpen(true)}
+              aria-label="Scan QR code to check in"
+              title="Check in via QR scan"
+              className="text-white/50 hover:text-[#E066FF] transition-colors p-1.5 rounded-lg border border-transparent hover:border-[#E066FF]/20 hover:bg-[#E066FF]/10"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <path d="M14 14h2v2h-2zM18 14h3M14 18h2M18 18h3v3M21 14v2" />
+              </svg>
+            </button>
             <button
               onClick={() => {
                 void fetch('/api/auth/logout', { method: 'POST' }).finally(() => {
