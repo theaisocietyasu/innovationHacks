@@ -9,8 +9,7 @@ import crypto from 'crypto';
 import path from 'path';
 import fs from 'fs';
 import QRCode from 'qrcode';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { SendMailClient } = require('zeptomail');
+import { SendMailClient } from 'zeptomail';
 
 const SITE_URL = process.env.SITE_URL || 'https://innovationhacks.dev';
 const TEMPLATE_PATH = path.join(
@@ -66,12 +65,12 @@ export async function sendAcceptanceEmail(registration: {
 
     const client = new SendMailClient({
       url: 'api.zeptomail.com/',
-      token: process.env.ZEPTOMAIL_TOKEN,
+      token: process.env.ZEPTOMAIL_TOKEN!,
     });
 
     await client.sendMail({
-      from: { address: process.env.EMAIL_FROM },
-      to: [{ email_address: { address: email } }],
+      from: { address: process.env.EMAIL_FROM!, name: 'Innovation Hacks' },
+      to: [{ email_address: { address: email, name: fullName } }],
       subject: "You're in — Innovation Hacks 2.0 Check-in QR 🚀",
       htmlbody: html,
       inline_images: [
