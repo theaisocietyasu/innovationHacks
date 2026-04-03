@@ -31,7 +31,7 @@ const CountdownTimer = () => {
   };
 
   useEffect(() => {
-    const endDate = new Date("2026-04-03T09:00:00-07:00"); // April 3rd 2026, Arizona time
+    const endDate = new Date("2026-04-03T18:30:00-07:00"); // April 3rd 2026, 6:30 PM Arizona time
     const intervalId = setInterval(() => {
       calculateTimeRemaining(endDate);
     }, 1000);
