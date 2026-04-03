@@ -66,6 +66,12 @@ export default function SponsorsSection2() {
     // ],
     gold: [
       {
+        src: "/sponsors_logos/Anton Rx white only.svg",
+        alt: "Anton RX LOGO",
+        link: "https://antonrx.com",
+        style: { transform: "scale(1.4)" },
+      },
+      {
         src: "/sponsors_logos/google.png",
         alt: "Google LOGO",
         link: "https://google.com",

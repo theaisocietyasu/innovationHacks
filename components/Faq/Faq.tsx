@@ -10,8 +10,7 @@ const HacksFaq = [
     question: "Who can participate?",
     answer: (
       <>
-        Innovation Hacks is open to all the students from Arizona State
-        University. Whether you&apos;re a complete beginner or an advanced
+        Innovation Hacks is open to all students above 18 years of age. Whether you&apos;re a complete beginner or an advanced
         hacker, you all are invited to join!
       </>
     ),
@@ -54,7 +53,7 @@ const HacksFaq = [
       <>
         Innovation Hacks 2026 offers a dynamic platform for learning and
         collaboration. You'll gain hands-on experience, network with industry
-        professionals, receive mentorship, and have the chance to win exciting
+        professionals, receive mentorship, attend workshops and have the chance to win exciting
         prizes. Plus, you'll create lasting connections in the tech community.
       </>
     ),
@@ -63,7 +62,7 @@ const HacksFaq = [
     question: <>What should be the team size? </>,
     answer: (
       <>
-        The team size can range from a minimum of 2 participants to a maximum
+        The team size must range from a minimum of 2 participants to a maximum
         of 4 participants.
       </>
     ),
@@ -72,8 +71,8 @@ const HacksFaq = [
     question: <>Are team members from other colleges allowed? </>,
     answer: (
       <>
-        No, Innovation Hacks 2026 welcomes participants from diverse
-        backgrounds, only from Arizona State University.
+        Yes, Innovation Hacks 2026 welcomes participants from diverse
+        backgrounds. All team members must be above 18 years of age and enrolled in an educational institution, but they can be from different colleges or universities. We are not providing any travel reimbursement, so participants are responsible for their own travel arrangements and expenses.
       </>
     ),
   },
@@ -82,7 +81,7 @@ const HacksFaq = [
     answer: (
       <>
         We have a great community on Discord. Reach out to other innovators,
-        collaborate, communicate, and make things possible! 🤝
+        collaborate, communicate, and make things possible! There will also be an in-person team formation event on 3rd April! 🤝
       </>
     ),
   },
