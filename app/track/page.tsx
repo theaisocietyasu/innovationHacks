@@ -28,17 +28,16 @@ interface TrackData {
   tracks: TrackInfo[];
 }
 
-// Sponsor logo images — add Anton RX path here once the file is ready
+// Sponsor logo images
 const TRACK_LOGOS: Record<string, string> = {
+  "Anton RX": "/sponsors_logos/Anton Rx white only.svg",
   Google: "/sponsors_logos/google.png",
   Amazon: "/sponsors_logos/amazon.svg",
   Statefarm: "/sponsors_logos/statefarmm.png",
 };
 
 // Emoji fallback for tracks without a logo yet
-const TRACK_EMOJIS: Record<string, string> = {
-  "Anton RX": "🧪",
-};
+const TRACK_EMOJIS: Record<string, string> = {};
 
 const DEV_TRACKS: TrackInfo[] = [
   { name: "Anton RX", currentCount: 0, teams: [] },
