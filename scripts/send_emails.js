@@ -42,6 +42,7 @@ const registrationSchema = new mongoose.Schema({
   status: String,
   checkin_token: String,
   email_sent: Boolean,
+  time_update_sent: Boolean,
 });
 
 const Registration =
@@ -52,26 +53,19 @@ const Registration =
 
 const TEMPLATE_PATH = path.join(
   __dirname,
-  '../emails/Hackathon Check-in registration.html'
+  '../emails/Hackathon Check-in time update.html'
 );
 
-function buildHtml(template, { firstName, fullName, school, tokenLabel }) {
+function buildHtml(template, { firstName, tokenLabel }) {
   return template
-    // Greeting line: "Hey Gunbir, you're in. 🎉"
-    .replace(
-      `Hey Gunbir, you're in. 🎉`,
-      `Hey ${firstName}, you're in. 🎉`
-    )
-    // Full name — two occurrences (greeting line + registration table)
-    .replace(/Gunbir Singh/g, fullName)
-    // School name
-    .replace(/Arizona State University/g, school)
+    // Greeting placeholder
+    .replace('{{first_name}}', firstName)
     // QR <img> src — replace external URL with CID reference (inline attachment)
     .replace(
       /https:\/\/api\.qrserver\.com\/v1\/create-qr-code\/\?[^"]+/,
       'cid:checkin-qr'
     )
-    // Text display label
+    // Token display label (two occurrences: img alt data attr + text label)
     .replace(/IH2026-GUNBIR-A3F9B2C1/g, tokenLabel);
 }
 
@@ -87,10 +81,14 @@ async function processRegistration(reg, template) {
   const fullName = `${reg.firstName} ${reg.lastName}`;
 
   try {
-    // 1. Use existing token if present, otherwise generate a new 256-char hex token
-    const token = reg.checkin_token || crypto.randomBytes(128).toString('hex');
+    // 1. Require existing token — this is a resend, not a new registration
+    if (!reg.checkin_token) {
+      console.warn(`⚠ Skipping ${fullName} <${reg.email}> — no checkin_token on record`);
+      return { success: false };
+    }
+    const token = reg.checkin_token;
 
-    // 2. Build check-in URL
+    // 2. Build check-in URL (same as original)
     const url = `${SITE_URL}/api/admin/checkin/${token}`;
 
     // 3. Generate QR code as PNG buffer
@@ -109,8 +107,6 @@ async function processRegistration(reg, template) {
     // 5. Build HTML (QR src replaced with cid:checkin-qr)
     const html = buildHtml(template, {
       firstName: reg.firstName,
-      fullName,
-      school: reg.school,
       tokenLabel,
     });
 
@@ -118,7 +114,7 @@ async function processRegistration(reg, template) {
     const resp = await client.sendMail({
       from: { address: process.env.EMAIL_FROM },
       to: [{ email_address: { address: reg.email } }],
-      subject: "You're in — Innovation Hacks 2.0 Check-in QR 🚀",
+      subject: 'Check-in time update — Innovation Hacks 2.0 is now at 6:30 PM',
       htmlbody: html,
       inline_images: [
         {
@@ -129,10 +125,10 @@ async function processRegistration(reg, template) {
       ],
     });
 
-    // 8. Update DB on success
+    // 7. Mark as notified so re-running the script doesn't double-send
     await Registration.updateOne(
       { _id: reg._id },
-      { $set: { checkin_token: token, email_sent: true, status: 'accepted' } }
+      { $set: { time_update_sent: true } }
     );
 
     console.log(`✓ Sent to ${fullName} <${reg.email}> (request_id: ${resp?.request_id ?? 'n/a'})`);
@@ -167,14 +163,14 @@ async function main() {
 
   const query = mode === 'single'
     ? { email: email.toLowerCase() }
-    : { email_sent: { $ne: true } };
+    : { email_sent: true, time_update_sent: { $ne: true } };
 
   const registrations = await Registration.find(query).lean();
 
   if (registrations.length === 0) {
     const msg = mode === 'single'
-      ? `No pending registration found for ${email} (already sent or doesn't exist).`
-      : 'No pending registrations found. All emails already sent.';
+      ? `No registration found for ${email}, or update already sent.`
+      : 'No eligible registrations found. Either no one has been emailed yet, or all updates already sent.';
     console.log(msg);
     await mongoose.disconnect();
     return;
