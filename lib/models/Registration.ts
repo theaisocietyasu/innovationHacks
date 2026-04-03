@@ -14,13 +14,15 @@ export interface IRegistration extends Document {
   countryOfResidence: string;
   linkedinUrl?: string;
   githubUrl: string;
-  resumeUrl: string;
-  resumeFileName: string;
+  resumeUrl?: string;
+  resumeFileName?: string;
   mlhCodeOfConduct: boolean;
   mlhDataSharing: boolean;
   mlhEmailConsent: boolean;
   status: 'waitlisted' | 'accepted' | 'rejected' | 'checked-in';
   registeredAt: Date;
+  checkin_token?: string;
+  email_sent?: boolean;
 }
 
 const RegistrationSchema = new Schema<IRegistration>({
@@ -53,8 +55,8 @@ const RegistrationSchema = new Schema<IRegistration>({
   countryOfResidence: { type: String, required: true, trim: true },
   linkedinUrl: { type: String, required: false, trim: true },
   githubUrl: { type: String, required: true, trim: true },
-  resumeUrl: { type: String, trim: true, required: true },
-  resumeFileName: { type: String, trim: true, required: true },
+  resumeUrl: { type: String, trim: true, required: false },
+  resumeFileName: { type: String, trim: true, required: false },
   mlhCodeOfConduct: { type: Boolean, required: true },
   mlhDataSharing: { type: Boolean, required: true },
   mlhEmailConsent: { type: Boolean, required: true },
@@ -65,6 +67,8 @@ const RegistrationSchema = new Schema<IRegistration>({
     required: true,
   },
   registeredAt: { type: Date, default: Date.now },
+  checkin_token: { type: String, index: true, sparse: true },
+  email_sent: { type: Boolean, default: false },
 });
 
 const Registration: Model<IRegistration> =

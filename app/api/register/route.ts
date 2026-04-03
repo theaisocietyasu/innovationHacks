@@ -7,6 +7,7 @@ import { GridFSBucket } from 'mongodb';
 import { connectToDatabase } from '@/lib/mongodb';
 import Registration from '@/lib/models/Registration';
 import RateLimit from '@/lib/models/RateLimit';
+import { sendAcceptanceEmail } from '@/lib/sendAcceptanceEmail';
 
 // ── Rate limiting ─────────────────────────────────────────────────────────────
 // Distributed rate limiting via MongoDB — works correctly across all serverless
@@ -26,7 +27,7 @@ async function checkRateLimit(ip: string): Promise<boolean> {
   const entry = await RateLimit.findOneAndUpdate(
     { ip, resetAt: { $gt: now } },
     { $inc: { count: 1 }, $setOnInsert: { resetAt } },
-    { upsert: true, new: true },
+    { upsert: true, returnDocument: 'after' },
   );
 
   return entry.count <= RATE_LIMIT_MAX;
@@ -133,38 +134,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     // ── Step 1: Validate resume file (type + size only — no upload yet) ──────
     const resumeFile = formData.get('resumeFile');
+    const hasResume = resumeFile instanceof File && resumeFile.size > 0;
 
-    if (!(resumeFile instanceof File) || resumeFile.size === 0) {
-      return NextResponse.json(
-        { error: { code: 'VALIDATION_FAILED', message: 'Resume is required. Please upload a PDF.' } },
-        { status: 400 },
-      );
-    }
-
-    if (resumeFile.type !== 'application/pdf') {
-      return NextResponse.json(
-        {
-          error: {
-            code: 'VALIDATION_FAILED',
-            message: 'Resume must be a PDF file.',
-            details: [{ field: 'resumeFile', message: 'Only PDF files are accepted.' }],
+    if (hasResume) {
+      if (resumeFile.type !== 'application/pdf') {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'VALIDATION_FAILED',
+              message: 'Resume must be a PDF file.',
+              details: [{ field: 'resumeFile', message: 'Only PDF files are accepted.' }],
+            },
           },
-        },
-        { status: 400 },
-      );
-    }
+          { status: 400 },
+        );
+      }
 
-    if (resumeFile.size > MAX_RESUME_SIZE) {
-      return NextResponse.json(
-        {
-          error: {
-            code: 'VALIDATION_FAILED',
-            message: 'Resume file must be 4 MB or smaller.',
-            details: [{ field: 'resumeFile', message: 'File size exceeds 4 MB limit.' }],
+      if (resumeFile.size > MAX_RESUME_SIZE) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'VALIDATION_FAILED',
+              message: 'Resume file must be 4 MB or smaller.',
+              details: [{ field: 'resumeFile', message: 'File size exceeds 4 MB limit.' }],
+            },
           },
-        },
-        { status: 400 },
-      );
+          { status: 400 },
+        );
+      }
     }
 
     // ── Step 2: Validate form fields ─────────────────────────────────────────
@@ -209,39 +206,67 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // ── Step 4: Upload resume to GridFS ───────────────────────────────────────
+    // ── Step 4: Upload resume to GridFS (optional) ───────────────────────────
     // Only reached after all validation passes — no orphaned files on failure.
-    const bucket = new GridFSBucket(mongoose.connection.db!, { bucketName: 'resumes' });
-    const buffer = Buffer.from(await resumeFile.arrayBuffer());
-    const fileId = new mongoose.Types.ObjectId();
-    const uuidFileName = `${crypto.randomUUID()}.pdf`;
+    let resumeUrl: string | undefined;
+    let uuidFileName: string | undefined;
+    let bucket: GridFSBucket | undefined;
+    let fileId: mongoose.Types.ObjectId | undefined;
 
-    await new Promise<void>((resolve, reject) => {
-      const uploadStream = bucket.openUploadStreamWithId(fileId, uuidFileName, {
-        metadata: { contentType: 'application/pdf' },
+    if (hasResume) {
+      bucket = new GridFSBucket(mongoose.connection.db!, { bucketName: 'resumes' });
+      const buffer = Buffer.from(await (resumeFile as File).arrayBuffer());
+      fileId = new mongoose.Types.ObjectId();
+      uuidFileName = `${crypto.randomUUID()}.pdf`;
+
+      await new Promise<void>((resolve, reject) => {
+        const uploadStream = bucket!.openUploadStreamWithId(fileId!, uuidFileName!, {
+          metadata: { contentType: 'application/pdf' },
+        });
+        uploadStream.end(buffer);
+        uploadStream.on('finish', resolve);
+        uploadStream.on('error', reject);
       });
-      uploadStream.end(buffer);
-      uploadStream.on('finish', resolve);
-      uploadStream.on('error', reject);
-    });
 
-    const resumeUrl = `/api/resume/${fileId.toString()}`;
+      resumeUrl = `/api/resume/${fileId.toString()}`;
+    }
 
     // ── Step 5: Persist registration ─────────────────────────────────────────
     const registration = new Registration({
       ...data,
-      resumeUrl,
-      resumeFileName: uuidFileName,
+      ...(resumeUrl && { resumeUrl }),
+      ...(uuidFileName && { resumeFileName: uuidFileName }),
     });
 
     try {
       await registration.save();
     } catch (saveErr) {
       // Clean up the uploaded resume so we don't leave an orphaned GridFS file.
-      await bucket.delete(fileId).catch((deleteErr) =>
-        console.error('[POST /api/register] Failed to delete orphaned resume after save failure:', deleteErr),
-      );
+      if (bucket && fileId) {
+        await bucket.delete(fileId).catch((deleteErr) =>
+          console.error('[POST /api/register] Failed to delete orphaned resume after save failure:', deleteErr),
+        );
+      }
       throw saveErr;
+    }
+
+    // ── Step 6: Auto-accept + email (if ACCEPT_PARTICIPANTS=true) ────────────
+    if (process.env.ACCEPT_PARTICIPANTS === 'true') {
+      const emailResult = await sendAcceptanceEmail({
+        _id: registration._id,
+        firstName: registration.firstName,
+        lastName: registration.lastName,
+        email: registration.email,
+        school: registration.school,
+      });
+
+      if (emailResult.success) {
+        await Registration.updateOne(
+          { _id: registration._id },
+          { $set: { status: 'accepted', email_sent: true, checkin_token: emailResult.token } },
+        );
+      }
+      // If email fails, participant stays waitlisted — no error surfaced to user.
     }
 
     return NextResponse.json(

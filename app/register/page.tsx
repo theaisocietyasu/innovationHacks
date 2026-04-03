@@ -84,9 +84,7 @@ const schema = z.object({
     message: "You must agree to MLH data sharing",
   }),
   mlhEmailConsent: z.boolean(),
-  resume: z.custom<File>((val) => val instanceof File, {
-    message: "Please upload your resume (PDF, max 4 MB)",
-  }),
+  resume: z.custom<File | undefined>((val) => val === undefined || val instanceof File).optional(),
 });
 
 // z.coerce.number() in Zod v4 has `unknown` as input type, which conflicts with
@@ -771,14 +769,14 @@ export default function RegisterPage() {
                   <div className="mt-4">
                     <label className="register-label">
                       Resume (PDF, max 4 MB){" "}
-                      <span style={{ color: "#ff6b6b" }} aria-label="required">*</span>
+                      <span style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.85em" }}>(optional)</span>
                     </label>
                     <div
                       {...getRootProps()}
                       className={`register-dropzone${isDragActive ? " register-dropzone--active" : ""}`}
                       role="button"
                       tabIndex={0}
-                      aria-label="Upload resume (required). Click or drag and drop a PDF"
+                      aria-label="Upload resume (optional). Click or drag and drop a PDF"
                     >
                       <input {...getInputProps()} />
                       {resumeFile ? (
