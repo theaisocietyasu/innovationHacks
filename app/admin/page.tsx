@@ -350,6 +350,7 @@ export default function AdminPage() {
   const [teamSearch, setTeamSearch] = useState('');
   const [teamTrackFilter, setTeamTrackFilter] = useState('');
   const [teamUnassignedOnly, setTeamUnassignedOnly] = useState(false);
+  const [teamLateOnly, setTeamLateOnly] = useState(false);
 
   // Close modal on Escape
   useEffect(() => {
@@ -641,6 +642,7 @@ export default function AdminPage() {
     if (teamSearch && !t.teamName.toLowerCase().includes(teamSearch.toLowerCase())) return false;
     if (teamTrackFilter && t.assignedTrack !== teamTrackFilter) return false;
     if (teamUnassignedOnly && t.assignedTrack) return false;
+    if (teamLateOnly && !t.isLate) return false;
     return true;
   });
 
@@ -1193,10 +1195,20 @@ export default function AdminPage() {
                   />
                   Unassigned only
                 </label>
+                {/* Late toggle */}
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', userSelect: 'none' }}>
+                  <input
+                    type="checkbox"
+                    checked={teamLateOnly}
+                    onChange={e => setTeamLateOnly(e.target.checked)}
+                    style={{ accentColor: '#fb923c', width: '15px', height: '15px' }}
+                  />
+                  Late only
+                </label>
                 {/* Clear filters */}
-                {(teamSearch || teamTrackFilter || teamUnassignedOnly) && (
+                {(teamSearch || teamTrackFilter || teamUnassignedOnly || teamLateOnly) && (
                   <button
-                    onClick={() => { setTeamSearch(''); setTeamTrackFilter(''); setTeamUnassignedOnly(false); }}
+                    onClick={() => { setTeamSearch(''); setTeamTrackFilter(''); setTeamUnassignedOnly(false); setTeamLateOnly(false); }}
                     style={{ padding: '5px 12px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: 'rgba(255,255,255,0.55)', fontSize: '0.8rem', cursor: 'pointer' }}
                   >
                     Clear
