@@ -1,8 +1,10 @@
 // app/track/page.tsx — Server Component
-// Fetches track data server-side and renders either a "coming soon" state
-// or the full track assignment grid.
+// Fetches track data server-side and renders the full track assignment grid.
 
 import { type Metadata } from "next";
+import { connectToDatabase } from "@/lib/mongodb";
+import TrackSlot from "@/lib/models/TrackSlot";
+import Team from "@/lib/models/Team";
 
 export const dynamic = "force-dynamic";
 
@@ -49,79 +51,31 @@ const DEV_TRACKS: TrackInfo[] = [
 // ── Data fetching ─────────────────────────────────────────────────────────────
 
 async function getTrackData(): Promise<TrackData> {
-  // In dev without a DB, skip the network call and show placeholder data
   if (process.env.NODE_ENV === "development" && !process.env.MONGODB_URI) {
     return { revealed: true, tracks: DEV_TRACKS };
   }
 
-  const baseUrl = process.env.SITE_URL ?? "http://localhost:3000";
   try {
-    const res = await fetch(`${baseUrl}/api/tracks`, { cache: "no-store" });
-    if (!res.ok) return { revealed: false, tracks: [] };
-    const data = (await res.json()) as TrackData;
-    if (process.env.NODE_ENV === "development" && data.tracks.length === 0) {
-      return { ...data, tracks: DEV_TRACKS };
-    }
-    return data;
+    await connectToDatabase();
+    const slots = await TrackSlot.find().lean<{ name: string; currentCount: number }[]>();
+    const teams = await Team.find({ status: "assigned" }).lean<{ teamName: string; leadName: string; assignedTrack: string }[]>();
+
+    const tracks: TrackInfo[] = slots.map((slot) => ({
+      name: slot.name,
+      currentCount: slot.currentCount,
+      teams: teams
+        .filter((t) => t.assignedTrack === slot.name)
+        .map((t) => ({ teamName: t.teamName, leadName: t.leadName })),
+    }));
+
+    return { revealed: true, tracks };
   } catch {
-    return { revealed: false, tracks: [] };
+    return { revealed: true, tracks: DEV_TRACKS };
   }
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-function ComingSoon() {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
-      {/* Subtle pulsing glow orb */}
-      <div
-        aria-hidden="true"
-        style={{
-          width: 160,
-          height: 160,
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle, rgba(224,102,255,0.25) 0%, rgba(123,97,255,0.10) 60%, transparent 100%)",
-          animation: "pulse 3s ease-in-out infinite",
-        }}
-      />
-      <div>
-        <h1
-          style={{
-            fontSize: "clamp(1.8rem, 4vw, 2.6rem)",
-            fontWeight: 700,
-            color: "#ffffff",
-            margin: "0 0 12px",
-            letterSpacing: "-0.02em",
-          }}
-        >
-          Track assignments{" "}
-          <span style={{ color: "#E066FF" }}>coming soon</span>
-        </h1>
-        <p
-          style={{
-            color: "rgba(255,255,255,0.50)",
-            fontSize: "1rem",
-            maxWidth: 420,
-            margin: "0 auto",
-            lineHeight: 1.6,
-          }}
-        >
-          Your track will be revealed at the event tonight. Check back here
-          or look for the announcement on Discord.
-        </p>
-      </div>
-
-      {/* Inline keyframes for the pulse — no extra CSS file needed */}
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { transform: scale(1); opacity: 0.8; }
-          50%       { transform: scale(1.15); opacity: 1; }
-        }
-      `}</style>
-    </div>
-  );
-}
 
 function TrackGrid({ tracks }: { tracks: TrackInfo[] }) {
   return (
@@ -313,11 +267,7 @@ export default async function TrackPage() {
         }}
       >
         <div style={{ width: "100%", maxWidth: "1100px" }}>
-          {data.revealed || process.env.NODE_ENV === "development" ? (
-            <TrackGrid tracks={data.tracks} />
-          ) : (
-            <ComingSoon />
-          )}
+          <TrackGrid tracks={data.tracks} />
         </div>
       </main>
     </>
