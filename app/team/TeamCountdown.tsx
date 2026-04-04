@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 interface CountdownProps {
-  targetDate: string;
+  targetDate?: string;
 }
 
 interface TimeLeft {
@@ -24,10 +24,7 @@ export function TeamCountdown({ targetDate }: CountdownProps) {
   const [expired, setExpired] = useState(false);
 
   useEffect(() => {
-    if (!targetDate) {
-      setExpired(true);
-      return;
-    }
+    if (!targetDate) return;
 
     const tick = () => {
       const diff = new Date(targetDate).getTime() - Date.now();
@@ -47,6 +44,35 @@ export function TeamCountdown({ targetDate }: CountdownProps) {
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
   }, [targetDate]);
+
+  // No targetDate provided — admin has not set a specific opening time yet.
+  if (!targetDate) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="flex flex-col items-center gap-6 py-12 text-center"
+      >
+        <h1 className="text-3xl font-bold text-white">
+          Team registration opens{" "}
+          <span className="text-[#E066FF]">soon</span>
+        </h1>
+        <p className="text-white/60 text-base max-w-md">
+          Get your team ready — registration will open shortly. Check back here
+          when it goes live.
+        </p>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="text-white/35 text-sm"
+        >
+          Innovation Hacks 2.0 &middot; April 3–5, 2026 &middot; ASU
+        </motion.div>
+      </motion.div>
+    );
+  }
 
   const units: Array<{ label: string; value: number }> = [
     { label: "Days", value: timeLeft.days },

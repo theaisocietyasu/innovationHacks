@@ -341,8 +341,16 @@ export default function AdminPage() {
   const [applyingAll, setApplyingAll] = useState(false);
   const [runningAssignment, setRunningAssignment] = useState(false);
   const [assignmentComplete, setAssignmentComplete] = useState(false);
+  const [teamRegistrationOpen, setTeamRegistrationOpen] = useState(false);
+  const [togglingTeamReg, setTogglingTeamReg] = useState(false);
   const [lateTrackSelections, setLateTrackSelections] = useState<Record<string, string>>({});
   const [lateAssigning, setLateAssigning] = useState<Record<string, boolean>>({});
+
+  // Team filters
+  const [teamSearch, setTeamSearch] = useState('');
+  const [teamTrackFilter, setTeamTrackFilter] = useState('');
+  const [teamUnassignedOnly, setTeamUnassignedOnly] = useState(false);
+  const [teamLateOnly, setTeamLateOnly] = useState(false);
 
   // Close modal on Escape
   useEffect(() => {
@@ -369,25 +377,30 @@ export default function AdminPage() {
     };
   }, [search]);
 
-  // Fetch teams + track slots
+  // Fetch teams + track slots + settings
   const fetchTeamsData = useCallback(async () => {
     setTeamsLoading(true);
     try {
-      const [teamsRes, tracksRes] = await Promise.all([
+      const [teamsRes, tracksRes, settingsRes] = await Promise.all([
         fetch('/api/admin/teams'),
-        fetch('/api/tracks'),
+        fetch('/api/admin/tracks'),
+        fetch('/api/admin/settings'),
       ]);
       if (teamsRes.ok) {
         const t = await teamsRes.json() as Team[];
         setTeams(t);
       }
       if (tracksRes.ok) {
-        const tracksData = await tracksRes.json() as { revealed: boolean; tracks: TrackSlot[] };
-        setTrackSlots(tracksData.tracks);
-        if (tracksData.revealed) setAssignmentComplete(true);
+        const slots = await tracksRes.json() as TrackSlot[];
+        setTrackSlots(slots);
         const inputs: Record<string, string> = {};
-        for (const s of tracksData.tracks) inputs[s.name] = String(s.maxTeams);
+        for (const s of slots) inputs[s.name] = String(s.maxTeams);
         setSlotInputs(inputs);
+      }
+      if (settingsRes.ok) {
+        const settingsData = await settingsRes.json() as { teamRegistrationOpen: boolean; tracksRevealed: boolean };
+        setTeamRegistrationOpen(settingsData.teamRegistrationOpen);
+        if (settingsData.tracksRevealed) setAssignmentComplete(true);
       }
     } finally {
       setTeamsLoading(false);
@@ -547,6 +560,28 @@ export default function AdminPage() {
     }
   };
 
+  const handleToggleTeamRegistration = async () => {
+    setTogglingTeamReg(true);
+    try {
+      const next = !teamRegistrationOpen;
+      const res = await fetch('/api/admin/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teamRegistrationOpen: next }),
+      });
+      if (res.ok) {
+        setTeamRegistrationOpen(next);
+      } else {
+        const body = await res.json() as { error?: string };
+        alert(body.error ?? 'Failed to update team registration status.');
+      }
+    } catch {
+      alert('Network error. Please try again.');
+    } finally {
+      setTogglingTeamReg(false);
+    }
+  };
+
   const handleLateAssign = async (teamId: string) => {
     const track = lateTrackSelections[teamId];
     if (!track) return;
@@ -602,6 +637,14 @@ export default function AdminPage() {
     { label: 'Registered', field: 'registeredAt' },
     { label: 'Status', field: 'status' },
   ];
+
+  const filteredTeams = teams.filter(t => {
+    if (teamSearch && !t.teamName.toLowerCase().includes(teamSearch.toLowerCase())) return false;
+    if (teamTrackFilter && t.assignedTrack !== teamTrackFilter) return false;
+    if (teamUnassignedOnly && t.assignedTrack) return false;
+    if (teamLateOnly && !t.isLate) return false;
+    return true;
+  });
 
   return (
     <div className="min-h-screen">
@@ -1014,6 +1057,29 @@ export default function AdminPage() {
       {activeTab === 'teams' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
+          {/* Team Registration Toggle */}
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px' }}>
+            <h3 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: 700 }}>Team Registration</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+              {teamRegistrationOpen ? (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '999px', background: 'rgba(224,102,255,0.15)', border: '1px solid rgba(224,102,255,0.35)', color: '#E066FF', fontSize: '0.85rem', fontWeight: 600 }}>
+                  ● Registration open
+                </span>
+              ) : (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '999px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.45)', fontSize: '0.85rem', fontWeight: 600 }}>
+                  ○ Registration closed
+                </span>
+              )}
+              <button
+                onClick={() => void handleToggleTeamRegistration()}
+                disabled={togglingTeamReg}
+                style={{ padding: '10px 24px', borderRadius: '8px', border: 'none', background: teamRegistrationOpen ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg, #E066FF, #7B61FF)', color: '#fff', fontSize: '0.9rem', fontWeight: 700, cursor: togglingTeamReg ? 'not-allowed' : 'pointer', opacity: togglingTeamReg ? 0.6 : 1 }}
+              >
+                {togglingTeamReg ? 'Updating…' : teamRegistrationOpen ? 'Close Team Registration' : 'Open Team Registration'}
+              </button>
+            </div>
+          </div>
+
           {/* Track Overview */}
           <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '24px' }}>
             <h3 style={{ margin: '0 0 4px', fontSize: '1rem', fontWeight: 700 }}>Track Overview</h3>
@@ -1097,11 +1163,65 @@ export default function AdminPage() {
 
           {/* Team Table */}
           <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px' }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 700 }}>All Teams</h3>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>All Teams</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                {/* Team name search */}
+                <input
+                  type="text"
+                  placeholder="Search team name…"
+                  value={teamSearch}
+                  onChange={e => setTeamSearch(e.target.value)}
+                  style={{ padding: '6px 12px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.07)', color: '#fff', fontSize: '0.85rem', width: '180px' }}
+                />
+                {/* Track filter */}
+                <select
+                  value={teamTrackFilter}
+                  onChange={e => setTeamTrackFilter(e.target.value)}
+                  style={{ padding: '6px 10px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.07)', color: teamTrackFilter ? '#fff' : 'rgba(255,255,255,0.45)', fontSize: '0.85rem' }}
+                >
+                  <option value="">All tracks</option>
+                  {trackSlots.map(s => (
+                    <option key={s.name} value={s.name}>{s.name}</option>
+                  ))}
+                </select>
+                {/* Unassigned toggle */}
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', userSelect: 'none' }}>
+                  <input
+                    type="checkbox"
+                    checked={teamUnassignedOnly}
+                    onChange={e => { setTeamUnassignedOnly(e.target.checked); if (e.target.checked) setTeamTrackFilter(''); }}
+                    style={{ accentColor: '#E066FF', width: '15px', height: '15px' }}
+                  />
+                  Unassigned only
+                </label>
+                {/* Late toggle */}
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', userSelect: 'none' }}>
+                  <input
+                    type="checkbox"
+                    checked={teamLateOnly}
+                    onChange={e => setTeamLateOnly(e.target.checked)}
+                    style={{ accentColor: '#fb923c', width: '15px', height: '15px' }}
+                  />
+                  Late only
+                </label>
+                {/* Clear filters */}
+                {(teamSearch || teamTrackFilter || teamUnassignedOnly || teamLateOnly) && (
+                  <button
+                    onClick={() => { setTeamSearch(''); setTeamTrackFilter(''); setTeamUnassignedOnly(false); setTeamLateOnly(false); }}
+                    style={{ padding: '5px 12px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: 'rgba(255,255,255,0.55)', fontSize: '0.8rem', cursor: 'pointer' }}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
             {teamsLoading ? (
               <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>Loading…</p>
             ) : teams.length === 0 ? (
               <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem' }}>No teams registered yet.</p>
+            ) : filteredTeams.length === 0 ? (
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem' }}>No teams match the current filters.</p>
             ) : (
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
@@ -1113,7 +1233,7 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {teams.map((team) => (
+                    {filteredTeams.map((team) => (
                       <tr key={team._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                         <td style={{ padding: '10px 12px', fontWeight: 600 }}>{team.teamName}</td>
                         <td style={{ padding: '10px 12px', color: 'rgba(255,255,255,0.7)' }}>{team.leadName}</td>

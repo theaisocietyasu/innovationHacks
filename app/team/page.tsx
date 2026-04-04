@@ -1,7 +1,10 @@
 // app/team/page.tsx — Server Component shell
-// Reads REGISTRATION_OPEN_AT env var; renders countdown or form accordingly.
+// Reads teamRegistrationOpen flag from the Settings DB document (key: "main").
+// Toggled from the admin panel — no hardcoded date required.
 
 import { type Metadata } from "next";
+import { connectToDatabase } from "@/lib/mongodb";
+import Settings from "@/lib/models/Settings";
 import { TeamCountdown } from "./TeamCountdown";
 import { TeamRegistrationForm } from "./TeamRegistrationForm";
 
@@ -11,14 +14,18 @@ export const metadata: Metadata = {
   title: "Team Registration | Innovation Hacks",
 };
 
-export default function TeamPage() {
-  const rawDate = process.env.REGISTRATION_OPEN_AT ?? "";
-  const openAt = rawDate ? new Date(rawDate).getTime() : 0;
-  // In dev: always show the form. In prod: enforce the timestamp.
-  const isOpen = process.env.NODE_ENV === "development" || openAt === 0 || Date.now() >= openAt;
-
-  // Pass a stable ISO string to the client component for the countdown timer.
-  const targetDate = openAt > 0 ? new Date(openAt).toISOString() : "";
+export default async function TeamPage() {
+  let isOpen = false;
+  try {
+    await connectToDatabase();
+    const settings = await Settings.findOne({ key: "main" });
+    isOpen =
+      process.env.NODE_ENV === "development" ||
+      settings?.teamRegistrationOpen === true;
+  } catch {
+    // DB error: fail safe — keep form hidden
+    isOpen = false;
+  }
 
   return (
     <>
@@ -44,7 +51,7 @@ export default function TeamPage() {
               {isOpen ? (
                 <TeamRegistrationForm />
               ) : (
-                <TeamCountdown targetDate={targetDate} />
+                <TeamCountdown />
               )}
             </div>
           </section>
