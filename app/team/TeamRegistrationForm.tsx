@@ -16,6 +16,7 @@ type Track = (typeof TRACKS)[number];
 const memberSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Valid email required"),
+  discord: z.string().min(2, "Discord username required"),
 });
 
 const formSchema = z
@@ -23,6 +24,7 @@ const formSchema = z
     teamName: z.string().min(1, "Team name is required"),
     leadName: z.string().min(1, "Lead name is required"),
     leadEmail: z.string().email("Valid email required"),
+    leadDiscord: z.string().min(2, "Discord username required"),
     memberCount: z.coerce.number().int().min(2).max(4),
     members: z.array(memberSchema),
     pref1: z.string().min(1, "First preference required") as z.ZodType<Track>,
@@ -46,6 +48,7 @@ const formSchema = z
 // with react-hook-form's Resolver typing. Explicitly override memberCount to number.
 type FormData = Omit<z.infer<typeof formSchema>, "memberCount"> & {
   memberCount: number;
+  leadDiscord: string;
 };
 
 // ── Component ────────────────────────────────────────────────────────────────
@@ -94,6 +97,7 @@ export function TeamRegistrationForm() {
           teamName: data.teamName,
           leadName: data.leadName,
           leadEmail: data.leadEmail,
+          leadDiscord: data.leadDiscord,
           memberCount: data.memberCount,
           members: trimmedMembers,
           preferences: [data.pref1, data.pref2, data.pref3],
@@ -101,9 +105,8 @@ export function TeamRegistrationForm() {
       });
 
       type ApiResult =
-        | { success: true; message: string }
-        | { success: false; message: string }
-        | { error: { message: string } };
+        | { success: true; teamName: string }
+        | { error: string | { message?: string; formErrors?: string[]; fieldErrors?: Record<string, string[]> } };
 
       const json = (await res.json()) as ApiResult;
 
@@ -119,9 +122,23 @@ export function TeamRegistrationForm() {
       }
 
       if ("error" in json) {
-        setSubmitError(json.error.message);
-      } else if ("message" in json) {
-        setSubmitError(json.message);
+        const err = json.error;
+        if (typeof err === "string") {
+          setSubmitError(err);
+        } else if (typeof err === "object" && err !== null) {
+          if (err.message) {
+            setSubmitError(err.message);
+          } else if (err.formErrors && err.formErrors.length > 0) {
+            setSubmitError(err.formErrors[0]);
+          } else if (err.fieldErrors) {
+            const firstField = Object.values(err.fieldErrors)[0];
+            setSubmitError(firstField?.[0] ?? "Registration failed. Please try again.");
+          } else {
+            setSubmitError("Registration failed. Please try again.");
+          }
+        } else {
+          setSubmitError("Registration failed. Please try again.");
+        }
       } else {
         setSubmitError("Registration failed. Please try again.");
       }
@@ -277,6 +294,27 @@ export function TeamRegistrationForm() {
           </div>
         </div>
 
+        <div className="mt-4">
+          <label htmlFor="leadDiscord" className="register-label">
+            Lead Discord Username <span style={{ color: "#ff6b6b" }}>*</span>
+          </label>
+          <input
+            id="leadDiscord"
+            type="text"
+            className={`register-input${errors.leadDiscord ? " error" : ""}`}
+            placeholder="username (without #)"
+            autoComplete="off"
+            aria-invalid={!!errors.leadDiscord}
+            aria-describedby={errors.leadDiscord ? "leadDiscord-error" : undefined}
+            {...register("leadDiscord")}
+          />
+          {errors.leadDiscord && (
+            <span id="leadDiscord-error" className="register-error" role="alert">
+              {errors.leadDiscord.message}
+            </span>
+          )}
+        </div>
+
         {/* ── Team Size ──────────────────────────────────────────────────── */}
         <div className="mt-4">
           <label htmlFor="memberCount" className="register-label">
@@ -308,69 +346,66 @@ export function TeamRegistrationForm() {
               Additional Members ({additionalCount})
             </p>
             {memberSlots.map((i) => (
-              <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div>
-                  <label
-                    htmlFor={`members.${i}.name`}
-                    className="register-label"
-                  >
-                    Member {i + 1} Name <span style={{ color: "#ff6b6b" }}>*</span>
-                  </label>
-                  <input
-                    id={`members.${i}.name`}
-                    type="text"
-                    className={`register-input${
-                      errors.members?.[i]?.name ? " error" : ""
-                    }`}
-                    placeholder={`Member ${i + 1}`}
-                    aria-invalid={!!errors.members?.[i]?.name}
-                    aria-describedby={
-                      errors.members?.[i]?.name
-                        ? `members-${i}-name-error`
-                        : undefined
-                    }
-                    {...register(`members.${i}.name`)}
-                  />
-                  {errors.members?.[i]?.name && (
-                    <span
-                      id={`members-${i}-name-error`}
-                      className="register-error"
-                      role="alert"
-                    >
-                      {errors.members[i]?.name?.message}
-                    </span>
-                  )}
+              <div key={i} className="mt-4" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor={`members.${i}.name`} className="register-label">
+                      Member {i + 1} Name <span style={{ color: "#ff6b6b" }}>*</span>
+                    </label>
+                    <input
+                      id={`members.${i}.name`}
+                      type="text"
+                      className={`register-input${errors.members?.[i]?.name ? " error" : ""}`}
+                      placeholder={`Member ${i + 1}`}
+                      aria-invalid={!!errors.members?.[i]?.name}
+                      aria-describedby={errors.members?.[i]?.name ? `members-${i}-name-error` : undefined}
+                      {...register(`members.${i}.name`)}
+                    />
+                    {errors.members?.[i]?.name && (
+                      <span id={`members-${i}-name-error`} className="register-error" role="alert">
+                        {errors.members[i]?.name?.message}
+                      </span>
+                    )}
+                  </div>
+
+                  <div>
+                    <label htmlFor={`members.${i}.email`} className="register-label">
+                      Member {i + 1} Email <span style={{ color: "#ff6b6b" }}>*</span>
+                    </label>
+                    <input
+                      id={`members.${i}.email`}
+                      type="email"
+                      className={`register-input${errors.members?.[i]?.email ? " error" : ""}`}
+                      placeholder={`member${i + 1}@example.com`}
+                      aria-invalid={!!errors.members?.[i]?.email}
+                      aria-describedby={errors.members?.[i]?.email ? `members-${i}-email-error` : undefined}
+                      {...register(`members.${i}.email`)}
+                    />
+                    {errors.members?.[i]?.email && (
+                      <span id={`members-${i}-email-error`} className="register-error" role="alert">
+                        {errors.members[i]?.email?.message}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div>
-                  <label
-                    htmlFor={`members.${i}.email`}
-                    className="register-label"
-                  >
-                    Member {i + 1} Email <span style={{ color: "#ff6b6b" }}>*</span>
+                  <label htmlFor={`members.${i}.discord`} className="register-label">
+                    Member {i + 1} Discord Username <span style={{ color: "#ff6b6b" }}>*</span>
                   </label>
                   <input
-                    id={`members.${i}.email`}
-                    type="email"
-                    className={`register-input${
-                      errors.members?.[i]?.email ? " error" : ""
-                    }`}
-                    placeholder={`member${i + 1}@example.com`}
-                    aria-invalid={!!errors.members?.[i]?.email}
-                    aria-describedby={
-                      errors.members?.[i]?.email
-                        ? `members-${i}-email-error`
-                        : undefined
-                    }
-                    {...register(`members.${i}.email`)}
+                    id={`members.${i}.discord`}
+                    type="text"
+                    className={`register-input${errors.members?.[i]?.discord ? " error" : ""}`}
+                    placeholder="username (without #)"
+                    autoComplete="off"
+                    aria-invalid={!!errors.members?.[i]?.discord}
+                    aria-describedby={errors.members?.[i]?.discord ? `members-${i}-discord-error` : undefined}
+                    {...register(`members.${i}.discord`)}
                   />
-                  {errors.members?.[i]?.email && (
-                    <span
-                      id={`members-${i}-email-error`}
-                      className="register-error"
-                      role="alert"
-                    >
-                      {errors.members[i]?.email?.message}
+                  {errors.members?.[i]?.discord && (
+                    <span id={`members-${i}-discord-error`} className="register-error" role="alert">
+                      {errors.members[i]?.discord?.message}
                     </span>
                   )}
                 </div>

@@ -344,6 +344,11 @@ export default function AdminPage() {
   const [lateTrackSelections, setLateTrackSelections] = useState<Record<string, string>>({});
   const [lateAssigning, setLateAssigning] = useState<Record<string, boolean>>({});
 
+  // Team filters
+  const [teamSearch, setTeamSearch] = useState('');
+  const [teamTrackFilter, setTeamTrackFilter] = useState('');
+  const [teamUnassignedOnly, setTeamUnassignedOnly] = useState(false);
+
   // Close modal on Escape
   useEffect(() => {
     if (!viewingResume) return;
@@ -602,6 +607,13 @@ export default function AdminPage() {
     { label: 'Registered', field: 'registeredAt' },
     { label: 'Status', field: 'status' },
   ];
+
+  const filteredTeams = teams.filter(t => {
+    if (teamSearch && !t.teamName.toLowerCase().includes(teamSearch.toLowerCase())) return false;
+    if (teamTrackFilter && t.assignedTrack !== teamTrackFilter) return false;
+    if (teamUnassignedOnly && t.assignedTrack) return false;
+    return true;
+  });
 
   return (
     <div className="min-h-screen">
@@ -1097,11 +1109,55 @@ export default function AdminPage() {
 
           {/* Team Table */}
           <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px' }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 700 }}>All Teams</h3>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>All Teams</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                {/* Team name search */}
+                <input
+                  type="text"
+                  placeholder="Search team name…"
+                  value={teamSearch}
+                  onChange={e => setTeamSearch(e.target.value)}
+                  style={{ padding: '6px 12px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.07)', color: '#fff', fontSize: '0.85rem', width: '180px' }}
+                />
+                {/* Track filter */}
+                <select
+                  value={teamTrackFilter}
+                  onChange={e => setTeamTrackFilter(e.target.value)}
+                  style={{ padding: '6px 10px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.07)', color: teamTrackFilter ? '#fff' : 'rgba(255,255,255,0.45)', fontSize: '0.85rem' }}
+                >
+                  <option value="">All tracks</option>
+                  {trackSlots.map(s => (
+                    <option key={s.name} value={s.name}>{s.name}</option>
+                  ))}
+                </select>
+                {/* Unassigned toggle */}
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', userSelect: 'none' }}>
+                  <input
+                    type="checkbox"
+                    checked={teamUnassignedOnly}
+                    onChange={e => { setTeamUnassignedOnly(e.target.checked); if (e.target.checked) setTeamTrackFilter(''); }}
+                    style={{ accentColor: '#E066FF', width: '15px', height: '15px' }}
+                  />
+                  Unassigned only
+                </label>
+                {/* Clear filters */}
+                {(teamSearch || teamTrackFilter || teamUnassignedOnly) && (
+                  <button
+                    onClick={() => { setTeamSearch(''); setTeamTrackFilter(''); setTeamUnassignedOnly(false); }}
+                    style={{ padding: '5px 12px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: 'rgba(255,255,255,0.55)', fontSize: '0.8rem', cursor: 'pointer' }}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
             {teamsLoading ? (
               <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>Loading…</p>
             ) : teams.length === 0 ? (
               <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem' }}>No teams registered yet.</p>
+            ) : filteredTeams.length === 0 ? (
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem' }}>No teams match the current filters.</p>
             ) : (
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
@@ -1113,7 +1169,7 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {teams.map((team) => (
+                    {filteredTeams.map((team) => (
                       <tr key={team._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                         <td style={{ padding: '10px 12px', fontWeight: 600 }}>{team.teamName}</td>
                         <td style={{ padding: '10px 12px', color: 'rgba(255,255,255,0.7)' }}>{team.leadName}</td>
