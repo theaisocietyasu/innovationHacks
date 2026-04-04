@@ -341,6 +341,8 @@ export default function AdminPage() {
   const [applyingAll, setApplyingAll] = useState(false);
   const [runningAssignment, setRunningAssignment] = useState(false);
   const [assignmentComplete, setAssignmentComplete] = useState(false);
+  const [teamRegistrationOpen, setTeamRegistrationOpen] = useState(false);
+  const [togglingTeamReg, setTogglingTeamReg] = useState(false);
   const [lateTrackSelections, setLateTrackSelections] = useState<Record<string, string>>({});
   const [lateAssigning, setLateAssigning] = useState<Record<string, boolean>>({});
 
@@ -374,13 +376,14 @@ export default function AdminPage() {
     };
   }, [search]);
 
-  // Fetch teams + track slots
+  // Fetch teams + track slots + settings
   const fetchTeamsData = useCallback(async () => {
     setTeamsLoading(true);
     try {
-      const [teamsRes, tracksRes] = await Promise.all([
+      const [teamsRes, tracksRes, settingsRes] = await Promise.all([
         fetch('/api/admin/teams'),
         fetch('/api/tracks'),
+        fetch('/api/admin/settings'),
       ]);
       if (teamsRes.ok) {
         const t = await teamsRes.json() as Team[];
@@ -393,6 +396,10 @@ export default function AdminPage() {
         const inputs: Record<string, string> = {};
         for (const s of tracksData.tracks) inputs[s.name] = String(s.maxTeams);
         setSlotInputs(inputs);
+      }
+      if (settingsRes.ok) {
+        const settingsData = await settingsRes.json() as { teamRegistrationOpen: boolean };
+        setTeamRegistrationOpen(settingsData.teamRegistrationOpen);
       }
     } finally {
       setTeamsLoading(false);
@@ -549,6 +556,28 @@ export default function AdminPage() {
     } finally {
       setRunningAssignment(false);
       await fetchTeamsData();
+    }
+  };
+
+  const handleToggleTeamRegistration = async () => {
+    setTogglingTeamReg(true);
+    try {
+      const next = !teamRegistrationOpen;
+      const res = await fetch('/api/admin/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teamRegistrationOpen: next }),
+      });
+      if (res.ok) {
+        setTeamRegistrationOpen(next);
+      } else {
+        const body = await res.json() as { error?: string };
+        alert(body.error ?? 'Failed to update team registration status.');
+      }
+    } catch {
+      alert('Network error. Please try again.');
+    } finally {
+      setTogglingTeamReg(false);
     }
   };
 
@@ -1025,6 +1054,29 @@ export default function AdminPage() {
 
       {activeTab === 'teams' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+          {/* Team Registration Toggle */}
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px' }}>
+            <h3 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: 700 }}>Team Registration</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+              {teamRegistrationOpen ? (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '999px', background: 'rgba(224,102,255,0.15)', border: '1px solid rgba(224,102,255,0.35)', color: '#E066FF', fontSize: '0.85rem', fontWeight: 600 }}>
+                  ● Registration open
+                </span>
+              ) : (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '999px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.45)', fontSize: '0.85rem', fontWeight: 600 }}>
+                  ○ Registration closed
+                </span>
+              )}
+              <button
+                onClick={() => void handleToggleTeamRegistration()}
+                disabled={togglingTeamReg}
+                style={{ padding: '10px 24px', borderRadius: '8px', border: 'none', background: teamRegistrationOpen ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg, #E066FF, #7B61FF)', color: '#fff', fontSize: '0.9rem', fontWeight: 700, cursor: togglingTeamReg ? 'not-allowed' : 'pointer', opacity: togglingTeamReg ? 0.6 : 1 }}
+              >
+                {togglingTeamReg ? 'Updating…' : teamRegistrationOpen ? 'Close Team Registration' : 'Open Team Registration'}
+              </button>
+            </div>
+          </div>
 
           {/* Track Overview */}
           <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '24px' }}>
