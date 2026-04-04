@@ -55,12 +55,11 @@ export function TeamCountdown({ targetDate }: CountdownProps) {
         className="flex flex-col items-center gap-6 py-12 text-center"
       >
         <h1 className="text-3xl font-bold text-white">
-          Team registration opens{" "}
-          <span className="text-[#E066FF]">soon</span>
+          Team registration is now{" "}
+          <span className="text-[#E066FF]">CLOSED</span>
         </h1>
         <p className="text-white/60 text-base max-w-md">
-          Get your team ready — registration will open shortly. Check back here
-          when it goes live.
+          Thank you for your interest in Innovation Hacks 2.0! Team registration is currently closed. We will love for you to join us for our next hackathon in the future. In the meantime, follow us on social media to stay updated on upcoming events and opportunities!
         </p>
         <motion.div
           initial={{ opacity: 0 }}

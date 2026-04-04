@@ -19,9 +19,7 @@ export default async function TeamPage() {
   try {
     await connectToDatabase();
     const settings = await Settings.findOne({ key: "main" });
-    isOpen =
-      process.env.NODE_ENV === "development" ||
-      settings?.teamRegistrationOpen === true;
+    isOpen = settings?.teamRegistrationOpen === true;
   } catch {
     // DB error: fail safe — keep form hidden
     isOpen = false;
