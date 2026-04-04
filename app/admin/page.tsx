@@ -284,6 +284,23 @@ function ResumeButton({
   );
 }
 
+// ─── Teams types ─────────────────────────────────────────────────────────────
+
+interface TeamMember { name: string; email: string; }
+interface Team {
+  _id: string;
+  teamName: string;
+  leadName: string;
+  leadEmail: string;
+  members: TeamMember[];
+  preferences: string[];
+  assignedTrack: string | null;
+  isLate: boolean;
+  status: 'pending' | 'assigned';
+  submittedAt: string;
+}
+interface TrackSlot { name: string; maxTeams: number; currentCount: number; }
+
 // ─── Main page ───────────────────────────────────────────────────────────────
 
 export default function AdminPage() {
@@ -311,6 +328,22 @@ export default function AdminPage() {
   // QR scanner modal
   const [qrScannerOpen, setQrScannerOpen] = useState(false);
 
+  // Tab state
+  const [activeTab, setActiveTab] = useState<'registrations' | 'teams'>('registrations');
+
+  // Teams state
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [trackSlots, setTrackSlots] = useState<TrackSlot[]>([]);
+  const [teamsLoading, setTeamsLoading] = useState(false);
+  const [slotInputs, setSlotInputs] = useState<Record<string, string>>({});
+  const [slotSaving, setSlotSaving] = useState<Record<string, boolean>>({});
+  const [globalMax, setGlobalMax] = useState('');
+  const [applyingAll, setApplyingAll] = useState(false);
+  const [runningAssignment, setRunningAssignment] = useState(false);
+  const [assignmentComplete, setAssignmentComplete] = useState(false);
+  const [lateTrackSelections, setLateTrackSelections] = useState<Record<string, string>>({});
+  const [lateAssigning, setLateAssigning] = useState<Record<string, boolean>>({});
+
   // Close modal on Escape
   useEffect(() => {
     if (!viewingResume) return;
@@ -336,6 +369,31 @@ export default function AdminPage() {
     };
   }, [search]);
 
+  // Fetch teams + track slots
+  const fetchTeamsData = useCallback(async () => {
+    setTeamsLoading(true);
+    try {
+      const [teamsRes, tracksRes] = await Promise.all([
+        fetch('/api/admin/teams'),
+        fetch('/api/tracks'),
+      ]);
+      if (teamsRes.ok) {
+        const t = await teamsRes.json() as Team[];
+        setTeams(t);
+      }
+      if (tracksRes.ok) {
+        const tracksData = await tracksRes.json() as { revealed: boolean; tracks: TrackSlot[] };
+        setTrackSlots(tracksData.tracks);
+        if (tracksData.revealed) setAssignmentComplete(true);
+        const inputs: Record<string, string> = {};
+        for (const s of tracksData.tracks) inputs[s.name] = String(s.maxTeams);
+        setSlotInputs(inputs);
+      }
+    } finally {
+      setTeamsLoading(false);
+    }
+  }, []);
+
   // Session check
   useEffect(() => {
     (async () => {
@@ -345,10 +403,14 @@ export default function AdminPage() {
         const json = (await res.json()) as { user: { username: string } };
         setUser(json.user);
         setIsAuthenticated(true);
+        void fetchTeamsData();
       } catch {
         router.push('/admin/login');
       }
     })();
+  // fetchTeamsData is a stable useCallback ref — intentionally omitted from deps
+  // to prevent a double-fetch on mount. It is called once after auth succeeds.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   // Fetch registrations
@@ -409,6 +471,98 @@ export default function AdminPage() {
       alert('Failed to update status. Please try again.');
     } finally {
       setUpdating(null);
+    }
+  };
+
+  const handleSaveSlot = async (name: string) => {
+    setSlotSaving(prev => ({ ...prev, [name]: true }));
+    try {
+      const res = await fetch('/api/admin/tracks', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, maxTeams: parseInt(slotInputs[name] ?? '0', 10) || 0 }),
+      });
+      if (!res.ok) alert('Failed to save track capacity.');
+      else await fetchTeamsData();
+    } catch {
+      alert('Network error saving track capacity.');
+    } finally {
+      setSlotSaving(prev => ({ ...prev, [name]: false }));
+    }
+  };
+
+  const handleApplyAll = async () => {
+    const max = parseInt(globalMax, 10);
+    if (isNaN(max) || max < 0) { alert('Enter a valid number.'); return; }
+    setApplyingAll(true);
+    try {
+      await Promise.all(
+        trackSlots.map(s =>
+          fetch('/api/admin/tracks', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: s.name, maxTeams: max }),
+          })
+        )
+      );
+      await fetchTeamsData();
+      setGlobalMax('');
+    } catch {
+      alert('Network error applying to all tracks.');
+    } finally {
+      setApplyingAll(false);
+    }
+  };
+
+  const handleTeamTrackChange = async (teamId: string, assignedTrack: string) => {
+    try {
+      const res = await fetch(`/api/admin/teams/${teamId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assignedTrack }),
+      });
+      if (!res.ok) alert('Failed to update track assignment.');
+    } catch {
+      alert('Network error updating assignment.');
+    } finally {
+      await fetchTeamsData();
+    }
+  };
+
+  const handleRunAssignment = async () => {
+    setRunningAssignment(true);
+    try {
+      const res = await fetch('/api/admin/run-assignment', { method: 'POST' });
+      if (res.ok) {
+        setAssignmentComplete(true);
+      } else {
+        const body = await res.json() as { error?: string };
+        alert(body.error ?? 'Assignment failed. Please try again.');
+      }
+    } catch {
+      alert('Network error. Please try again.');
+    } finally {
+      setRunningAssignment(false);
+      await fetchTeamsData();
+    }
+  };
+
+  const handleLateAssign = async (teamId: string) => {
+    const track = lateTrackSelections[teamId];
+    if (!track) return;
+    setLateAssigning(prev => ({ ...prev, [teamId]: true }));
+    try {
+      const res = await fetch(`/api/admin/teams/${teamId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assignedTrack: track }),
+      });
+      if (!res.ok) alert('Failed to assign track.');
+    } catch {
+      alert('Network error assigning track.');
+    } finally {
+      setLateAssigning(prev => ({ ...prev, [teamId]: false }));
+      await fetchTeamsData();
     }
   };
 
@@ -530,6 +684,34 @@ export default function AdminPage() {
           <StatCard label="Checked In" value={data.stats['checked-in']}     accent="text-[#E066FF]" />
         </div>
       )}
+
+      {/* Tab switcher */}
+      <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '24px' }}>
+        {(['registrations', 'teams'] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            style={{
+              padding: '10px 20px',
+              fontSize: '0.9rem',
+              fontWeight: 600,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: activeTab === tab ? '#ffffff' : 'rgba(255,255,255,0.4)',
+              borderBottom: activeTab === tab ? '2px solid #E066FF' : '2px solid transparent',
+              marginBottom: '-1px',
+              textTransform: 'capitalize',
+              transition: 'color 0.15s',
+            }}
+          >
+            {tab === 'registrations' ? 'Registrations' : 'Teams'}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'registrations' && (
+      <div>
 
       {/* Filters */}
       <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-3 space-y-4">
@@ -825,6 +1007,188 @@ export default function AdminPage() {
           </div>
         )}
       </div>
+
+      </div>
+      )} {/* end activeTab === 'registrations' */}
+
+      {activeTab === 'teams' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+          {/* Track Overview */}
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '24px' }}>
+            <h3 style={{ margin: '0 0 4px', fontSize: '1rem', fontWeight: 700 }}>Track Overview</h3>
+            <p style={{ margin: '0 0 20px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)' }}>
+              Total registered: {teams.length} &nbsp;|&nbsp; Assigned: {teams.filter(t => t.status === 'assigned').length} &nbsp;|&nbsp; Pending: {teams.filter(t => t.status === 'pending').length}
+            </p>
+
+            {/* Global max — set all tracks at once */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', padding: '14px 16px', background: 'rgba(224,102,255,0.06)', border: '1px solid rgba(224,102,255,0.18)', borderRadius: '10px' }}>
+              <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)', whiteSpace: 'nowrap' }}>Max teams per track (all):</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder="e.g. 15"
+                value={globalMax}
+                onChange={e => { if (/^\d*$/.test(e.target.value)) setGlobalMax(e.target.value); }}
+                style={{ width: '80px', padding: '7px 10px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.08)', color: '#fff', fontSize: '0.9rem' }}
+              />
+              <button
+                onClick={() => void handleApplyAll()}
+                disabled={applyingAll || globalMax === ''}
+                style={{ padding: '7px 18px', borderRadius: '7px', border: 'none', background: 'linear-gradient(135deg,#E066FF,#7B61FF)', color: '#fff', fontSize: '0.85rem', fontWeight: 700, cursor: 'pointer', opacity: (applyingAll || globalMax === '') ? 0.5 : 1, whiteSpace: 'nowrap' }}
+              >
+                {applyingAll ? 'Applying…' : 'Apply to All'}
+              </button>
+            </div>
+
+            {/* Per-track cards */}
+            {teamsLoading ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>Loading…</p>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '14px' }}>
+                {trackSlots.map((slot) => (
+                  <div key={slot.name} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <p style={{ margin: 0, fontWeight: 700, fontSize: '1rem' }}>{slot.name}</p>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'rgba(255,255,255,0.45)' }}>
+                      {slot.currentCount} / {slot.maxTeams} teams
+                    </p>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        placeholder="max"
+                        value={slotInputs[slot.name] ?? ''}
+                        onChange={e => { if (/^\d*$/.test(e.target.value)) setSlotInputs(prev => ({ ...prev, [slot.name]: e.target.value })); }}
+                        style={{ width: '72px', padding: '6px 10px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.07)', color: '#fff', fontSize: '0.9rem' }}
+                      />
+                      <button
+                        onClick={() => void handleSaveSlot(slot.name)}
+                        disabled={slotSaving[slot.name]}
+                        style={{ padding: '6px 14px', borderRadius: '7px', border: 'none', background: '#E066FF', color: '#fff', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', opacity: slotSaving[slot.name] ? 0.6 : 1 }}
+                      >
+                        {slotSaving[slot.name] ? 'Saving…' : 'Save'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Assignment Control */}
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px' }}>
+            <h3 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: 700 }}>Assignment Control</h3>
+            {assignmentComplete ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px', borderRadius: '999px', background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', color: '#4ade80', fontSize: '0.85rem', fontWeight: 600 }}>
+                ✓ Assignment complete — tracks revealed
+              </span>
+            ) : (
+              <button
+                onClick={() => void handleRunAssignment()}
+                disabled={runningAssignment}
+                style={{ padding: '10px 24px', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg, #E066FF, #7B61FF)', color: '#fff', fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer', opacity: runningAssignment ? 0.6 : 1 }}
+              >
+                {runningAssignment ? 'Running…' : 'Run Assignment'}
+              </button>
+            )}
+          </div>
+
+          {/* Team Table */}
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '20px' }}>
+            <h3 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 700 }}>All Teams</h3>
+            {teamsLoading ? (
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>Loading…</p>
+            ) : teams.length === 0 ? (
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem' }}>No teams registered yet.</p>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                      {['Team', 'Lead', 'Submitted', '1st', '2nd', '3rd', 'Assigned Track', 'Late'].map(h => (
+                        <th key={h} style={{ padding: '8px 12px', textAlign: 'left', color: 'rgba(255,255,255,0.45)', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {teams.map((team) => (
+                      <tr key={team._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                        <td style={{ padding: '10px 12px', fontWeight: 600 }}>{team.teamName}</td>
+                        <td style={{ padding: '10px 12px', color: 'rgba(255,255,255,0.7)' }}>{team.leadName}</td>
+                        <td style={{ padding: '10px 12px', color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap' }}>
+                          {new Date(team.submittedAt).toLocaleString()}
+                        </td>
+                        <td style={{ padding: '10px 12px', color: 'rgba(255,255,255,0.6)' }}>{team.preferences[0]}</td>
+                        <td style={{ padding: '10px 12px', color: 'rgba(255,255,255,0.6)' }}>{team.preferences[1]}</td>
+                        <td style={{ padding: '10px 12px', color: 'rgba(255,255,255,0.6)' }}>{team.preferences[2]}</td>
+                        <td style={{ padding: '10px 12px' }}>
+                          <select
+                            value={team.assignedTrack ?? ''}
+                            onChange={(e) => void handleTeamTrackChange(team._id, e.target.value)}
+                            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '6px', color: '#fff', padding: '4px 8px', fontSize: '0.8rem' }}
+                          >
+                            <option value="">Unassigned</option>
+                            {trackSlots.map(t => (
+                              <option key={t.name} value={t.name}>{t.name}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td style={{ padding: '10px 12px' }}>
+                          {team.isLate && (
+                            <span style={{ padding: '2px 8px', borderRadius: '999px', background: 'rgba(251,146,60,0.15)', border: '1px solid rgba(251,146,60,0.3)', color: '#fb923c', fontSize: '0.75rem', fontWeight: 600 }}>Late</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Late Registration Panel */}
+          {teams.some(t => t.isLate && t.status === 'pending') && (
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(251,146,60,0.2)', borderRadius: '12px', padding: '20px' }}>
+              <h3 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 700, color: '#fb923c' }}>Late Registrations — Pending Assignment</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {teams
+                  .filter(t => t.isLate && t.status === 'pending')
+                  .map((team) => {
+                    const availableSlots = trackSlots
+                      .filter(s => s.currentCount < s.maxTeams)
+                      .sort((a, b) => a.currentCount - b.currentCount);
+                    return (
+                      <div key={team._id} style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+                        <span style={{ fontWeight: 600, flex: '1 1 auto' }}>{team.teamName}</span>
+                        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>{team.leadName}</span>
+                        <select
+                          value={lateTrackSelections[team._id] ?? ''}
+                          onChange={(e) => setLateTrackSelections(prev => ({ ...prev, [team._id]: e.target.value }))}
+                          style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '6px', color: '#fff', padding: '4px 8px', fontSize: '0.8rem' }}
+                        >
+                          <option value="">Select track…</option>
+                          {availableSlots.map(s => (
+                            <option key={s.name} value={s.name}>{s.name} ({s.currentCount}/{s.maxTeams})</option>
+                          ))}
+                        </select>
+                        <button
+                          onClick={() => void handleLateAssign(team._id)}
+                          disabled={!lateTrackSelections[team._id] || lateAssigning[team._id]}
+                          style={{ padding: '6px 14px', borderRadius: '6px', border: 'none', background: '#E066FF', color: '#fff', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', opacity: (!lateTrackSelections[team._id] || lateAssigning[team._id]) ? 0.5 : 1 }}
+                        >
+                          {lateAssigning[team._id] ? 'Assigning…' : 'Assign'}
+                        </button>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+
+        </div>
+      )} {/* end activeTab === 'teams' */}
 
       </div>
 
