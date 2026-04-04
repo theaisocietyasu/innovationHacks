@@ -5,6 +5,16 @@ import TrackSlot from "@/lib/models/TrackSlot";
 
 export const dynamic = "force-dynamic";
 
+export async function GET(request: Request): Promise<NextResponse> {
+  const auth = await requireAdmin(request);
+  if (!auth.ok) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+  await connectToDatabase();
+  const slots = await TrackSlot.find();
+  return NextResponse.json(slots);
+}
+
 export async function PATCH(request: Request): Promise<NextResponse> {
   const auth = await requireAdmin(request);
   if (!auth.ok) {

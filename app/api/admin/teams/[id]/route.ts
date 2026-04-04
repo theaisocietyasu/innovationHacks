@@ -8,7 +8,7 @@ import { TRACKS } from "@/lib/tracks";
 
 export const dynamic = "force-dynamic";
 
-const patchSchema = z.object({ assignedTrack: z.enum(TRACKS) });
+const patchSchema = z.object({ assignedTrack: z.union([z.enum(TRACKS), z.literal("")]) });
 
 export async function PATCH(
   request: NextRequest,
@@ -33,25 +33,26 @@ export async function PATCH(
     return NextResponse.json({ error: "Team not found" }, { status: 404 });
   }
 
-  // Decrement old track count if changing to a different track.
-  // Guard against going negative by requiring currentCount > 0.
-  if (team.assignedTrack && team.assignedTrack !== assignedTrack) {
+  const newTrack = assignedTrack || null;
+
+  // Decrement old track count when moving away from it
+  if (team.assignedTrack && team.assignedTrack !== newTrack) {
     await TrackSlot.findOneAndUpdate(
       { name: team.assignedTrack, currentCount: { $gt: 0 } },
       { $inc: { currentCount: -1 } }
     );
   }
 
-  // Increment new track count only if track is actually changing
-  if (team.assignedTrack !== assignedTrack) {
+  // Increment new track count only if assigning to a real track
+  if (newTrack && team.assignedTrack !== newTrack) {
     await TrackSlot.findOneAndUpdate(
-      { name: assignedTrack },
+      { name: newTrack },
       { $inc: { currentCount: 1 } }
     );
   }
 
-  team.assignedTrack = assignedTrack;
-  team.status = "assigned";
+  team.assignedTrack = newTrack;
+  team.status = newTrack ? "assigned" : "pending";
   await team.save();
 
   return NextResponse.json(team);
