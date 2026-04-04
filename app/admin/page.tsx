@@ -382,7 +382,7 @@ export default function AdminPage() {
     try {
       const [teamsRes, tracksRes, settingsRes] = await Promise.all([
         fetch('/api/admin/teams'),
-        fetch('/api/tracks'),
+        fetch('/api/admin/tracks'),
         fetch('/api/admin/settings'),
       ]);
       if (teamsRes.ok) {
@@ -390,16 +390,16 @@ export default function AdminPage() {
         setTeams(t);
       }
       if (tracksRes.ok) {
-        const tracksData = await tracksRes.json() as { revealed: boolean; tracks: TrackSlot[] };
-        setTrackSlots(tracksData.tracks);
-        if (tracksData.revealed) setAssignmentComplete(true);
+        const slots = await tracksRes.json() as TrackSlot[];
+        setTrackSlots(slots);
         const inputs: Record<string, string> = {};
-        for (const s of tracksData.tracks) inputs[s.name] = String(s.maxTeams);
+        for (const s of slots) inputs[s.name] = String(s.maxTeams);
         setSlotInputs(inputs);
       }
       if (settingsRes.ok) {
-        const settingsData = await settingsRes.json() as { teamRegistrationOpen: boolean };
+        const settingsData = await settingsRes.json() as { teamRegistrationOpen: boolean; tracksRevealed: boolean };
         setTeamRegistrationOpen(settingsData.teamRegistrationOpen);
+        if (settingsData.tracksRevealed) setAssignmentComplete(true);
       }
     } finally {
       setTeamsLoading(false);

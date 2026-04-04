@@ -21,6 +21,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const settings = await Settings.findOne({ key: "main" });
   return NextResponse.json({
     teamRegistrationOpen: settings?.teamRegistrationOpen ?? false,
+    tracksRevealed: settings?.tracksRevealed ?? false,
   });
 }
 
