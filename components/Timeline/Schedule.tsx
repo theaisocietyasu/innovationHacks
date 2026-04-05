@@ -43,12 +43,12 @@ const SCHEDULE: ScheduleEvent[] = [
   { time: "8:00 PM MST", title: "Dinner", description: "Third meal. Final stretch, projects due tomorrow. Enjoy Butter Chicken, Noodles, Paneer masala, Naan & Rice.", day: 2, date: "Saturday, April 4", type: "food" },
   { time: "Post Midnight", title: "Solution to your Midnight Cravings", description: "Push through the night with a late-night treat, grab some delicious slices from Domino's and keep on building.", day: 2, date: "Saturday, April 4", type: "food" },
   { time: "2:30 AM MST", title: "Post-Midnight Drinks", description: "Enjoy Drinks from Honey 2 A Bee Coffee & Crepes", day: 3, date: "Sunday, April 5", type: "food" },
-  { time: "10:30 AM MST", title: "Submission Deadline", description: "All projects must be submitted. Wrap up your code and demo.", day: 3, date: "Sunday, April 5", type: "logistics" },
-  { time: "11:00 AM MST", title: "Judging Begins", description: "Judges visit each team. 3-minute demo and Q&A.", day: 3, date: "Sunday, April 5", type: "judging" },
-  { time: "12:30 PM MST", title: "Brunch Time", description: "Enjoy Ike's sandwiches for brunch before the final presentations.", day: 3, date: "Sunday, April 5", type: "food" },
-  { time: "1:30 PM MST", title: "Finalist Presentations", description: "Teams demonstrate their projects to every stakeholder and attendees.", day: 3, date: "Sunday, April 5", type: "ceremony" },
-  { time: "2:30 PM MST", title: "Prize Distribution & Closing", description: "Winners announced. Prizes awarded. Thank you from the organizers.", day: 3, date: "Sunday, April 5", type: "ceremony" },
-  { time: "3:00 PM MST", title: "Hackathon Ends", description: "Pack up and say goodbye. See you next year.", day: 3, date: "Sunday, April 5", type: "logistics" },
+  { time: "10:30 AM MST", title: "Submission Deadline", description: "All projects must be submitted on Devpost. Every member of the team must join the project. Wrap up your code and demo. Submission takes approximately 1 hour, so be prepared.", day: 3, date: "Sunday, April 5", type: "logistics" },
+  { time: "11:00 AM MST", title: "Brunch Time", description: "Enjoy Ike's sandwiches for brunch before the final presentations.", day: 3, date: "Sunday, April 5", type: "food" },
+  { time: "12:00 PM MST", title: "Judging Begins", description: "Judges visit each team and 3-minute demo science fair style. Do not leave the judging area until instructed by Event Staff. Multiple Judges will be coming to your team.", day: 3, date: "Sunday, April 5", type: "judging" },
+  { time: "2:30 PM MST", title: "Judging Ends", description: "All judging is now complete. Teams should not leave the judging area until instructed by Event Staff.", day: 3, date: "Sunday, April 5", type: "judging" },
+  { time: "3:30 PM MST", title: "Prize Distribution & Closing", description: "At LSA 191, Winners will be announced. Prizes awarded for MLH Categories and the 4 Sponsor Tracks. Thank you from the organizers.", day: 3, date: "Sunday, April 5", type: "ceremony" },
+  { time: "4:00 PM MST", title: "Hackathon Ends", description: "Pack up and say goodbye. See you next year. If you made new friends, keep in touch!", day: 3, date: "Sunday, April 5", type: "logistics" },
 ];
 
 const TYPE_COLOR: Record<EventType, string> = {
